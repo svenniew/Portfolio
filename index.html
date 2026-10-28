@@ -1,0 +1,1202 @@
+<meta charset="utf-8">
+<title>Portfolio-Blasen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: Suchleiste oben, darunter Kreis-Voronoi links und Portfolio-Tabelle + BCG-Matrix rechts */
+:root{
+  --bg:#edf1f4; --surface:#ffffff; --surface-2:#f5f8fa; --ink:#132029; --muted:#5a6b78; --line:#d3dce3;
+  --accent:#1d6f7d; --own:#e2a72c; --own-line:#9a6a07; --on-own:#1d1505;
+  --g-neg:#c2573f; --g-flat:#8796a3; --g-mid:#4a9ea3; --g-high:#1e7a87; --g-hot:#0f5a68;
+  --star:#2e9d58; --cow:#e0912a; --q:#3b78d8; --dog:#d2483b; --up:#2a8a5c;
+  --comp:#7f8f9b; --comp-up:#6f9f82; --comp-down:#b5807a; --on-comp:#ffffff; --on-star:#ffffff; --on-cow:#1d1505; --on-q:#ffffff; --on-dog:#ffffff;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c1620; --surface:#12212d; --surface-2:#172a38; --ink:#e4ecf2; --muted:#93a5b3; --line:#243a4b;
+  --accent:#5cc0c9; --own:#f0b93e; --own-line:#ffd77a; --on-own:#1d1505;
+  --g-neg:#d9735b; --g-flat:#6e8190; --g-mid:#3d8f97; --g-high:#2b7b88; --g-hot:#1b6372;
+  --star:#4fca86; --cow:#f2a541; --q:#6aa2f5; --dog:#f0705f; --up:#5fcf96;
+  --comp:#3f5566; --comp-up:#36594a; --comp-down:#5e3e3d; --on-comp:#e4ecf2; --on-star:#0c1620; --on-cow:#1d1505; --on-q:#0c1620; --on-dog:#0c1620; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1620; --surface:#12212d; --surface-2:#172a38; --ink:#e4ecf2; --muted:#93a5b3; --line:#243a4b;
+  --accent:#5cc0c9; --own:#f0b93e; --own-line:#ffd77a; --on-own:#1d1505;
+  --g-neg:#d9735b; --g-flat:#6e8190; --g-mid:#3d8f97; --g-high:#2b7b88; --g-hot:#1b6372;
+  --star:#4fca86; --cow:#f2a541; --q:#6aa2f5; --dog:#f0705f; --up:#5fcf96;
+  --comp:#3f5566; --comp-up:#36594a; --comp-down:#5e3e3d; --on-comp:#e4ecf2; --on-star:#0c1620; --on-cow:#1d1505; --on-q:#0c1620; --on-dog:#0c1620; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 24px}
+.wrap{margin:0 auto;display:grid;gap:18px}
+/* Querformat: Inhalt höchstens 4:3, mittig */
+@media (orientation:landscape) and (min-width:1100px){.wrap{max-width:calc((100vh - 40px) * 4 / 3)}}
+header{display:grid;gap:14px}
+.eyebrow{font-family:var(--display);letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1;margin:0;text-transform:uppercase;letter-spacing:.02em;text-wrap:balance}
+.lead{color:var(--muted);margin:0;max-width:68ch}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+.search{position:relative;flex:1 1 320px;min-width:0}
+label.l,.ctl>.l{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px}
+#q{width:100%;font:inherit;font-size:18px;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+#q:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+#sugg{position:absolute;left:0;right:0;top:100%;margin-top:6px;background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  box-shadow:0 12px 30px rgba(0,0,0,.18);z-index:20;max-height:360px;overflow:auto;padding:4px}
+.sg{display:flex;justify-content:space-between;gap:12px;padding:9px 12px;border-radius:7px;cursor:pointer;align-items:baseline}
+.sg:hover,.sg.act{background:var(--surface-2)}
+.sg b{font-weight:700}
+.sg small{color:var(--muted);text-align:right}
+.sg.claude{border-top:1px solid var(--line);margin-top:4px;color:var(--accent);font-weight:600}
+.sg.hd{cursor:default;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 12px 2px}
+.ctl{display:flex;flex-direction:column}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{white-space:nowrap;font:inherit;font-size:14px;border:0;background:transparent;color:var(--ink);padding:10px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface);font-weight:600}
+.seg button:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=number]{font:inherit;width:74px;padding:9px 8px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.btn{font:inherit;font-size:14px;font-weight:600;border:1.5px solid var(--accent);color:var(--accent);background:transparent;border-radius:10px;padding:9px 14px;cursor:pointer}
+.btn:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+/* Standard: Tabelle und Matrix links gestapelt, Diagramm rechts groß; schmaler wird gestapelt */
+.main{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"title title" "chart chart" "table bcg";gap:16px 18px;align-items:start;position:relative}
+@media (min-width:1100px){
+  /* Diagramm füllt die Höhe, seine Breite folgt daraus (--chartw per Skript); links nimmt den Rest */
+  .main{grid-template-columns:minmax(370px,1fr) var(--chartw,minmax(0,2.4fr));grid-template-areas:"title title" "table chart" "bcg chart";
+    grid-template-rows:auto minmax(0,1fr) auto;height:calc(100vh - 56px);min-height:660px;align-items:stretch}
+  .main>[data-card=title]{align-self:end}
+  .main .search{flex:1 1 320px;min-width:180px}
+  .main #bcg{flex:none;height:auto}
+  .main .toolbar{gap:10px}
+}
+@media (min-width:1100px) and (max-width:1599px){
+  .main .seg button{padding:8px 9px;font-size:13px}
+  .main #q{font-size:15px;padding:9px 12px}
+  .main input[type=number]{width:58px;padding:7px 6px}
+  .main label.l,.main .ctl>.l{font-size:11px;white-space:nowrap}
+  .main .toolbar{justify-content:flex-start}
+}
+.main>[data-card=title]{grid-area:title}.main>[data-card=chart]{grid-area:chart}.main>[data-card=table]{grid-area:table}.main>[data-card=bcg]{grid-area:bcg}
+@media (max-width:900px){.main{grid-template-columns:1fr;grid-template-areas:"title" "chart" "table" "bcg"}}
+/* Zwischenbereich bis 1100 px: Kreis wächst mit der Breite, aber nie über die Fensterhöhe hinaus */
+@media (max-width:1099px){#chart{max-height:calc(100vh - 210px);min-height:0}}
+.card-x{position:relative;min-width:0;display:flex;flex-direction:column}
+[data-card=table]{container-type:inline-size}
+.sm-t{display:none}
+.fold{all:unset;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:default}
+.fold:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.zoomctl{margin-left:auto;display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.zoomctl button{font:inherit;font-size:13px;background:transparent;color:var(--ink);border:0;padding:4px 10px;cursor:pointer;min-width:32px}
+.zoomctl button+button{border-left:1px solid var(--line)}
+.zoomctl button:hover{background:var(--surface-2)}
+.zoomctl button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+#zoomReset{font-family:var(--mono);font-size:12px;min-width:58px}
+#chart{cursor:grab}
+.vol-inline,.rma-inline,.chip.bcg-inline{display:none;color:var(--muted)}
+.chip.bcg-inline{margin-top:4px;width:max-content}
+@container (max-width:330px){.tw .bcgc{display:none}.tw .chip.bcg-inline{display:block}}
+tr.row.has-sub td{border-bottom:0}
+tr.sub{cursor:pointer}
+tr.sub td{border-bottom:0;padding-top:1px;padding-bottom:3px;font-size:12.5px}
+tr.sub.last td{border-bottom:1px solid var(--line);padding-bottom:9px}
+tr.sub:hover td,tr.sub.sel td{background:var(--surface-2)}
+td.sub-name{padding-left:12px;color:var(--ink)}
+td.sub-name i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:1px}
+tr.sub td.sub-share{text-align:left;font-family:var(--mono);color:var(--ink)}
+@container (max-width:400px){.tw .rma{display:none}.tw .rma-inline{display:block}}
+@container (max-width:560px){.tw td.own small{display:none}.tw .vol{display:none}.tw .vol-inline{display:block}.tw .chip{font-size:10.5px;padding:1px 6px}.tw td,.tw th{padding-inline:4px}.tw th{white-space:normal;font-size:10px}.tw .gr{font-size:12px}}
+.hd{padding:0;display:grid;gap:8px;min-width:0}
+.hd[data-card=title]{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px 24px}
+.ttl{display:grid;gap:8px}
+@media (min-width:1100px) and (max-height:820px){.ttl .eyebrow{display:none}}
+[data-card=title] .toolbar{flex:1 1 640px;min-width:0}
+/* Passt die Kopfzeile nicht in eine Zeile: Suche allein in Zeile 1, alle Regler zusammen in Zeile 2 */
+.toolbar.stack .search{flex:1 1 100%}
+/* Zweizeilige Kopfzeile: Titel oben bündig statt unten */
+.hd[data-card=title]:has(.toolbar.stack){align-items:flex-start}
+.stage{position:relative;background:var(--surface);border-radius:16px;padding:18px;border:1px solid var(--line)}
+.co{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;align-items:baseline}
+.co h2{font-family:var(--display);font-size:32px;margin:0;text-transform:uppercase;letter-spacing:.03em;line-height:1.05}
+.co .meta{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.04em;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.badge.ai{border-color:var(--q);color:var(--q)}
+svg{display:block;width:100%;height:auto}
+#chart{flex:1 1 auto;min-height:0;height:100%;margin-top:8px}
+#bcg{flex:1 1 auto;min-height:0;height:100%}
+.leaf{stroke:var(--surface);stroke-width:1.5;cursor:grab;touch-action:none}
+.leaf:active{cursor:grabbing}
+.mkt{fill:none;stroke:var(--surface);stroke-width:5;pointer-events:none}
+.mkt.sel{stroke:var(--ink);stroke-width:3.5}
+.ring{fill:none;stroke:var(--line);stroke-width:2}
+.lbl{pointer-events:none;font-family:var(--body);font-weight:700}
+.mlbl{cursor:grab;touch-action:none}
+.mlbl text{pointer-events:auto}
+.leader{fill:none;stroke:var(--ink);stroke-opacity:.6;stroke-width:1.3;pointer-events:none}
+.leader-dot{fill:var(--ink);stroke:var(--surface);stroke-width:1.5;pointer-events:none}
+.mlbl .mgr{font-family:var(--mono);font-weight:500;fill:var(--muted);letter-spacing:0}
+.mlbl.sel .mname{text-decoration:underline;text-underline-offset:4px}
+.mlbl rect{fill:transparent}
+.mlbl text{font-family:var(--display);fill:var(--ink);font-weight:700;letter-spacing:.04em}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin-top:10px;justify-content:center}
+.legend .lg{display:inline-flex;gap:6px;align-items:center;font-variant-numeric:tabular-nums}
+.legend .lg b{color:var(--ink)}
+.legend .lg.off{opacity:.45}
+.legend i{display:inline-block;width:13px;height:13px;border-radius:50%}
+.hint{text-align:center;font-size:12.5px;color:var(--muted);margin:6px 0 0}
+#tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:7px 10px;border-radius:8px;max-width:240px;z-index:5;line-height:1.35}
+#busy{position:absolute;inset:0;background:color-mix(in srgb,var(--surface) 88%,transparent);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;z-index:6}
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;min-width:0}
+.card h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-size:16px;margin:0 0 10px;color:var(--muted)}
+.tw{overflow:auto;flex:1 1 auto;min-height:0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:6px 5px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 5px;border-bottom:1px solid var(--line);vertical-align:top}
+td small{font-size:11.5px;line-height:1.3}
+tr.row{cursor:pointer}
+tr.row:hover td,tr.row.sel td{background:var(--surface-2)}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+th.n{text-align:right}
+.own{font-weight:700}
+.own small{display:block;font-weight:400;color:var(--muted)}
+.gr{font-family:var(--mono);font-weight:500}
+.chip{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;border:1.5px solid currentColor}
+.chip.Star{color:var(--star)}.chip.CashCow{color:var(--cow)}.chip.Fragezeichen{color:var(--q)}.chip.PoorDog{color:var(--dog)}
+.note{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.msg{font-size:13.5px;padding:10px 12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line)}
+.msg[data-kind="err"]{border-color:var(--g-neg)}
+.bcg text{font-size:11px;fill:var(--muted)}
+.bcg .q{font-family:var(--display);font-size:13px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.bcg .axis line,.bcg .axis path{stroke:var(--line)}
+.bcg .axis text{fill:var(--muted);font-family:var(--mono);font-size:10px}
+.bcg .div{stroke:var(--muted);stroke-dasharray:4 4}
+/* Handy: kompakte Kopfzeile, Suche über die volle Breite, Regler darunter; Wischen scrollt die Seite */
+@media (max-width:600px){
+  body{padding-block:10px 20px}
+  .wrap,.main{gap:12px}
+  .ttl{gap:4px}.ttl .eyebrow{font-size:11px}
+  h1{font-size:28px}
+  .hd[data-card=title]{flex-direction:column;align-items:stretch;gap:10px}
+  .toolbar{gap:10px 12px}
+  .search{flex:1 1 100%}
+  #q{font-size:16px}
+  .seg button{padding:8px 10px;font-size:13.5px}
+  .stage,.card{padding:12px;border-radius:12px}
+  .co h2{font-size:24px}
+  .co .meta{font-size:11.5px}
+  /* Legende: drei Zeilen (Star · Cash Cow / Fragezeichen · Poor Dog / grün · rot), gleiche Spaltenbreiten */
+  .legend{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;font-size:12px;justify-items:start}
+  .legend .lg{display:grid;grid-template-columns:auto 1fr;column-gap:7px;align-items:center;white-space:nowrap}
+  .legend .lg .lv{grid-column:2;font-size:11.5px}
+  .leaf,.mlbl{touch-action:auto!important;cursor:default}
+  /* Suche als eigene Zeile, darunter alle drei Regler in einer Zeile */
+  [data-card=title] .toolbar{flex:none;display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:10px;align-items:end}
+  .toolbar .search{grid-column:1/-1}
+  .toolbar .ctl{min-width:0}
+  .toolbar .seg button{padding:8px 7px;font-size:12.5px}
+  .toolbar input[type=number]{width:46px;padding:7px 5px}
+  .toolbar .ctl>span{white-space:nowrap}
+  label.l,.ctl>.l{font-size:11px;white-space:nowrap}
+  .lg-t{display:none}.sm-t{display:inline}
+  /* Marktliste per Titel einklappbar */
+  .fold{cursor:pointer}
+  .fold::after{content:"▾";display:inline-block;margin-left:8px;transition:transform .15s}
+  [data-card=table].collapsed .fold::after{transform:rotate(-90deg)}
+  [data-card=table].collapsed .tw{display:none}
+  [data-card=table].collapsed h3{margin-bottom:0}
+}
+</style>
+
+<div class="wrap">
+  <div id="msg" class="msg" hidden></div>
+  <div class="main" id="board">
+    <section class="card-x hd" data-card="title">
+      <div class="ttl">
+        <div class="eyebrow">Portfolioanalyse · Marktanteil × Marktwachstum</div>
+        <h1>Portfolio-Blasen</h1>
+      </div>
+      <div class="toolbar">
+      <div class="search">
+        <label class="l" for="q">Unternehmen</label>
+        <input id="q" type="text" autocomplete="off" placeholder="z. B. Google, Facebook, Porsche, Nespresso …" role="combobox" aria-expanded="false" aria-controls="sugg">
+        <div id="sugg" role="listbox" hidden></div>
+      </div>
+      <div class="ctl"><span class="l">Größe nach</span>
+        <div class="seg" id="sizeSeg"><button type="button" data-v="revenue" aria-pressed="true"><span class="lg-t">Konzernumsatz</span><span class="sm-t">Umsatz</span></button><button type="button" data-v="size" aria-pressed="false"><span class="lg-t">Marktvolumen</span><span class="sm-t">Volumen</span></button></div></div>
+      <div class="ctl"><span class="l">Märkte</span>
+        <div class="seg" id="topSeg"><button type="button" data-v="4" aria-pressed="true">Top 4</button><button type="button" data-v="6" aria-pressed="false">Top 6</button><button type="button" data-v="99" aria-pressed="false">Alle</button></div></div>
+      <div class="ctl"><label class="l" for="thr"><span class="lg-t">Wachstum hoch ab</span><span class="sm-t">Wachstum ab</span></label>
+        <span><input id="thr" type="number" min="0" max="50" step="1" value="10"> <span style="color:var(--muted)">%<span class="lg-t"> p.a.</span></span></span></div>
+      </div>
+    </section>
+    <section class="stage card-x" data-card="chart" aria-label="Blasendiagramm">
+      <div class="co">
+        <h2 id="coName">–</h2>
+        <span class="meta" id="coMeta"></span>
+      </div>
+      <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span class="badge" id="coBadge"></span>
+        <div class="zoomctl" role="group" aria-label="Zoom">
+          <button type="button" id="zoomOut" aria-label="Verkleinern">−</button>
+          <button type="button" id="zoomReset" title="Zoom zurücksetzen">100 %</button>
+          <button type="button" id="zoomIn" aria-label="Vergrößern">+</button>
+        </div>
+        <button class="btn" id="regen" type="button" hidden style="padding:4px 10px;font-size:12.5px">Mit Claude neu schätzen</button>
+      </div>
+      <svg id="chart" viewBox="-48 -48 696 696" role="img" aria-label="Blasendiagramm der Märkte"></svg>
+      <div class="legend" id="legend"></div>
+      <div id="tip" hidden></div>
+      <div id="busy" hidden><div class="spin"></div><div id="busyText"></div><button class="btn" id="stop" type="button">Abbrechen</button></div>
+    </section>
+
+      <section class="card card-x" data-card="table">
+        <h3><button class="fold" id="foldTable" type="button" aria-expanded="true" aria-controls="tableBody">Märkte im Portfolio</button></h3>
+        <div class="tw" id="tableBody"><table>
+          <thead><tr><th>Markt</th><th class="n vol">Volumen</th><th class="n">Wachstum</th><th>Eigene Produkte</th><th class="n rma">rel. MA</th><th class="bcgc">BCG</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table></div>
+      </section>
+      <section class="card card-x" data-card="bcg">
+        <h3>BCG-Matrix</h3>
+        <svg id="bcg" class="bcg" viewBox="0 0 420 250" role="img" aria-label="BCG-Matrix"></svg>
+      </section>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-weighted-voronoi@1.1.3/build/d3-weighted-voronoi.js"></script>
+<script>
+// ---------- Eingebaute Beispieldaten (gerundete Schätzungen, Mrd. USD, Stand 2025) ----------
+// players: [Name, Marktanteil %, 1 = eigenes Produkt]
+const BUILTIN = [
+ {id:"alphabet",name:"Alphabet",hq:"Mountain View, USA",revenue:400,year:2025,
+  aliases:["google","youtube","android","chrome","gmail","waymo","deepmind","google cloud","pixel","fitbit","nest"],
+  markets:[
+   {name:"Websuche",basis:"Anteil an Suchanfragen",size:330,growth:8,revenue:215,players:[["Google Search",89.5,1],["Bing",4],["Yandex",2.5],["Baidu",1.2],["Yahoo",1.1]]},
+   {name:"Online-Videowerbung",basis:"Anteil an Werbeausgaben",size:190,growth:11,revenue:40,players:[["YouTube",21,1],["Meta",24],["TikTok/Douyin",15],["Amazon",6],["Tencent",4]]},
+   {name:"Cloud-Infrastruktur",basis:"Anteil am IaaS/PaaS-Umsatz",size:400,growth:22,revenue:58,players:[["Google Cloud",13,1],["AWS",30],["Microsoft Azure",20],["Alibaba Cloud",4],["Oracle",3]]},
+   {name:"App-Stores",basis:"Anteil an Verbraucherausgaben",size:170,growth:9,revenue:14,players:[["Google Play",35,1],["Apple App Store",65]]},
+   {name:"Musik-Streaming",basis:"Anteil an Abonnenten",size:32,growth:10,revenue:4,players:[["YouTube Music",9,1],["Spotify",32],["Tencent Music",13],["Apple Music",12],["Amazon Music",11]]},
+   {name:"Smartphones",basis:"Anteil an Auslieferungen",size:480,growth:3,revenue:5,players:[["Pixel",1,1],["Apple",19.7],["Samsung",19],["Xiaomi",13],["vivo",8],["OPPO",8]]}
+  ]},
+ {id:"meta",name:"Meta Platforms",hq:"Menlo Park, USA",revenue:195,year:2025,
+  aliases:["facebook","instagram","whatsapp","messenger","threads","oculus","quest","ray-ban meta","meta"],
+  markets:[
+   {name:"Social-Media-Werbung",basis:"Anteil an Werbeausgaben",size:270,growth:10,revenue:192,players:[["Facebook",28,1],["Instagram",25,1],["ByteDance",22],["Tencent",5],["LinkedIn",2],["Snap",2]]},
+   {name:"Messenger",basis:"Anteil an Nutzern (geschätzt)",size:70,growth:7,revenue:3,players:[["WhatsApp",45,1],["Messenger",12,1],["WeChat",18],["Telegram",9]]},
+   {name:"VR-Headsets",basis:"Anteil an Auslieferungen",size:9,growth:-5,revenue:1.5,players:[["Meta Quest",75,1],["Pico",7],["Sony PS VR",6],["Apple Vision",5]]},
+   {name:"Smart Glasses",basis:"Anteil an Auslieferungen",size:3,growth:60,revenue:1.2,players:[["Ray-Ban Meta",70,1],["Xiaomi",8],["Rokid",5],["Xreal",5]]}
+  ]},
+ {id:"apple",name:"Apple",hq:"Cupertino, USA",revenue:416,year:2025,
+  aliases:["iphone","ipad","mac","macbook","apple watch","airpods","beats","app store","apple music","apple tv"],
+  markets:[
+   {name:"Smartphones",basis:"Anteil an Auslieferungen",size:480,growth:3,revenue:209,players:[["iPhone",19.7,1],["Samsung",19],["Xiaomi",13],["vivo",8],["Transsion",8],["OPPO",8]]},
+   {name:"App-Stores",basis:"Anteil an Verbraucherausgaben",size:170,growth:9,revenue:30,players:[["App Store",65,1],["Google Play",35]]},
+   {name:"PCs",basis:"Anteil an Auslieferungen",size:230,growth:4,revenue:34,players:[["Mac",9,1],["Lenovo",25],["HP",20],["Dell",15],["Asus",7],["Acer",6.5]]},
+   {name:"Tablets",basis:"Anteil an Auslieferungen",size:60,growth:4,revenue:28,players:[["iPad",38,1],["Samsung",18],["Huawei",8],["Lenovo",7],["Xiaomi",7]]},
+   {name:"Smartwatches",basis:"Anteil an Auslieferungen",size:45,growth:5,revenue:17,players:[["Apple Watch",22,1],["Huawei",15],["Xiaomi",10],["Samsung",8],["imoo",6]]},
+   {name:"Kabellose Kopfhörer",basis:"Anteil an Auslieferungen",size:60,growth:6,revenue:19,players:[["AirPods",18,1],["Beats",3,1],["Xiaomi",8],["Samsung",7],["boAt",5]]},
+   {name:"Musik-Streaming",basis:"Anteil an Abonnenten",size:32,growth:10,revenue:10,players:[["Apple Music",12,1],["Spotify",32],["Tencent Music",13],["Amazon Music",11],["YouTube Music",9]]}
+  ]},
+ {id:"microsoft",name:"Microsoft",hq:"Redmond, USA",revenue:282,year:2025,
+  aliases:["windows","office","microsoft 365","teams","azure","xbox","linkedin","github","activision","blizzard","bing","dynamics"],
+  markets:[
+   {name:"Cloud-Infrastruktur",basis:"Anteil am IaaS/PaaS-Umsatz",size:400,growth:22,revenue:75,players:[["Azure",20,1],["AWS",30],["Google Cloud",13],["Alibaba Cloud",4],["Oracle",3]]},
+   {name:"Office-Software",basis:"Anteil am Umsatz",size:90,growth:10,revenue:85,players:[["Microsoft 365",62,1],["Google Workspace",18],["Zoho",2],["Apple iWork",1]]},
+   {name:"Desktop-Betriebssysteme",basis:"Anteil an Nutzung",size:45,growth:2,revenue:23,players:[["Windows",71,1],["macOS",15],["Linux",4],["ChromeOS",1.5]]},
+   {name:"Videospiele",basis:"Anteil am Umsatz",size:190,growth:3,revenue:23,players:[["Xbox & Activision",12,1],["Sony",15],["Tencent",12],["Nintendo",6],["NetEase",5],["EA",4]]},
+   {name:"Online-Recruiting",basis:"Anteil am Umsatz",size:35,growth:6,revenue:17,players:[["LinkedIn",30,1],["Indeed (Recruit)",25],["ZipRecruiter",2],["StepStone",3]]},
+   {name:"CRM-Software",basis:"Anteil am Umsatz",size:90,growth:12,revenue:7,players:[["Dynamics 365",6,1],["Salesforce",21],["Oracle",5],["SAP",5],["Adobe",4]]},
+   {name:"Websuche",basis:"Anteil an Suchanfragen",size:330,growth:8,revenue:13,players:[["Bing",4,1],["Google",89.5],["Yandex",2.5],["Baidu",1.2]]}
+  ]},
+ {id:"amazon",name:"Amazon",hq:"Seattle, USA",revenue:715,year:2025,
+  aliases:["aws","amazon web services","prime","prime video","twitch","alexa","echo","kindle","whole foods","audible"],
+  markets:[
+   {name:"Online-Handel USA",basis:"Anteil am Online-Umsatz",size:1300,growth:8,revenue:425,players:[["Amazon.com",40,1],["Walmart",9],["Apple",3],["eBay",3],["Temu/Shein",3]]},
+   {name:"Cloud-Infrastruktur",basis:"Anteil am IaaS/PaaS-Umsatz",size:400,growth:22,revenue:128,players:[["AWS",30,1],["Microsoft Azure",20],["Google Cloud",13],["Alibaba Cloud",4],["Oracle",3]]},
+   {name:"Retail Media",basis:"Anteil an Werbeausgaben",size:180,growth:14,revenue:68,players:[["Amazon Ads",32,1],["Alibaba",25],["PDD",10],["JD.com",6],["Walmart Connect",3]]},
+   {name:"Video-Streaming-Abos",basis:"Anteil am Umsatz",size:140,growth:7,revenue:48,players:[["Prime Video",13,1],["Netflix",26],["Disney+",11],["Max",7],["Tencent Video",5]]},
+   {name:"Smart Speaker",basis:"Anteil an Auslieferungen",size:15,growth:3,revenue:4,players:[["Echo/Alexa",25,1],["Baidu",18],["Xiaomi",14],["Google",12],["Alibaba",10]]}
+  ]},
+ {id:"volkswagen",name:"Volkswagen AG",hq:"Wolfsburg, DE",revenue:345,year:2025,
+  aliases:["vw","volkswagen","audi","porsche","skoda","škoda","seat","cupra","lamborghini","bentley","ducati","man","scania","traton"],
+  markets:[
+   {name:"Volumen-Pkw",basis:"Anteil an Auslieferungen",size:2000,growth:2,revenue:200,players:[["Volkswagen",6,1],["Škoda",1.3,1],["SEAT/Cupra",0.7,1],["Toyota",12],["Hyundai-Kia",8.5],["Stellantis",7],["GM",7],["BYD",5.5]]},
+   {name:"Premium-Pkw",basis:"Anteil an Auslieferungen",size:600,growth:3,revenue:105,players:[["Audi",17,1],["Porsche",5,1],["Bentley/Lamborghini",0.5,1],["BMW",22],["Mercedes-Benz",20],["Tesla",13],["Lexus",7]]},
+   {name:"Lkw & Busse",basis:"Anteil an Auslieferungen (ohne China)",size:300,growth:1,revenue:50,players:[["Traton (MAN, Scania)",17,1],["Daimler Truck",20],["Volvo Group",15],["PACCAR",12]]},
+   {name:"Elektroautos",basis:"Anteil an Auslieferungen",size:700,growth:20,revenue:45,players:[["VW-Konzern BEV",6,1],["BYD",22],["Tesla",13],["Geely",8],["SAIC-GM-Wuling",6]]}
+  ]},
+ {id:"nestle",name:"Nestlé",hq:"Vevey, CH",revenue:103,year:2025,
+  aliases:["nestle","nespresso","nescafé","nescafe","kitkat","maggi","purina","gerber","nan","thomy","wagner"],
+  markets:[
+   {name:"Verpackter Kaffee",basis:"Anteil am Umsatz",size:150,growth:5,revenue:25,players:[["Nescafé",13,1],["Nespresso",6,1],["Starbucks at Home",2,1],["JDE Peet's",9],["Lavazza",3],["Kraft Heinz",3]]},
+   {name:"Heimtiernahrung",basis:"Anteil am Umsatz",size:150,growth:5,revenue:21,players:[["Purina",22,1],["Mars Petcare",20],["Hill's",4],["Blue Buffalo",3]]},
+   {name:"Säuglingsnahrung",basis:"Anteil am Umsatz",size:70,growth:4,revenue:12,players:[["NAN & Gerber",23,1],["Danone",15],["Abbott",9],["Mead Johnson",8],["Feihe",6]]},
+   {name:"Süßwaren",basis:"Anteil am Umsatz",size:140,growth:4,revenue:8,players:[["KitKat & Co.",4,1],["Mondelez",15],["Mars",13],["Ferrero",9],["Hershey",7]]}
+  ]},
+ {id:"sap",name:"SAP",hq:"Walldorf, DE",revenue:40,year:2025,
+  aliases:["s/4hana","successfactors","concur","ariba","signavio","business one","hana"],
+  markets:[
+   {name:"ERP-Software",basis:"Anteil am Umsatz",size:60,growth:10,revenue:22,players:[["SAP S/4HANA",22,1],["Oracle",7],["Microsoft Dynamics",5],["Infor",4],["Workday",4]]},
+   {name:"Beschaffungssoftware",basis:"Anteil am Umsatz",size:12,growth:10,revenue:6,players:[["Ariba & Concur",25,1],["Coupa",8],["Oracle",6]]},
+   {name:"HR-Software",basis:"Anteil am Umsatz",size:40,growth:9,revenue:5,players:[["SuccessFactors",7,1],["Workday",13],["ADP",9],["Oracle",7],["UKG",6]]},
+   {name:"Datenbanken & Analytics",basis:"Anteil am Umsatz",size:120,growth:15,revenue:4,players:[["SAP HANA",3,1],["AWS",22],["Microsoft",20],["Oracle",18],["Google",8]]}
+  ]}
+];
+BUILTIN.forEach(c=>c.source="builtin");
+// Weitere Wettbewerber je Markt (gerundete Schätzungen), damit „Sonstige“ kleiner ausfällt
+const EXTRA_PLAYERS={
+ "Websuche":[["DuckDuckGo",0.7],["Naver",0.4]],
+ "Online-Videowerbung":[["Roku",2],["Netflix Ads",1.5],["Snap",1],["Pinterest",1]],
+ "Cloud-Infrastruktur":[["Salesforce",2.5],["IBM",2],["Tencent Cloud",2],["Huawei Cloud",2]],
+ "Musik-Streaming":[["NetEase Cloud Music",5],["Deezer",2],["SoundCloud",1]],
+ "Smartphones":[["Transsion",8],["Honor",4],["Huawei",4],["realme",4],["Motorola",3]],
+ "Social-Media-Werbung":[["Kuaishou",4],["Pinterest",1.5],["X",1],["Reddit",0.6]],
+ "Messenger":[["Snapchat",4],["LINE",3],["Viber",2],["Signal",1]],
+ "VR-Headsets":[["Valve",3],["HTC",2]],
+ "Smart Glasses":[["Huawei",3],["Even Realities",2]],
+ "PCs":[["MSI",2],["Samsung",1.5],["Huawei",1.5],["Microsoft Surface",1.5]],
+ "Tablets":[["Amazon",5],["Honor",3],["Microsoft",2]],
+ "Smartwatches":[["Garmin",5],["Amazfit",4],["Google/Fitbit",3],["boAt",3]],
+ "Kabellose Kopfhörer":[["Sony",4],["JBL",4],["Huawei",3],["Bose",2]],
+ "Office-Software":[["WPS Office",3],["Notion",1]],
+ "Videospiele":[["Take-Two",3],["Epic Games",2],["Bandai Namco",2],["Ubisoft",1.5]],
+ "Online-Recruiting":[["Seek",2],["Xing",1],["Naukri",1],["CareerBuilder",1]],
+ "CRM-Software":[["HubSpot",3],["Zoho",2],["ServiceNow",2]],
+ "Online-Handel USA":[["Target",2],["Costco",2],["Home Depot",2],["Best Buy",1.5],["Wayfair",1]],
+ "Retail Media":[["Instacart",2],["Target Roundel",1],["Kroger",1]],
+ "Video-Streaming-Abos":[["iQIYI",4],["Paramount+",3],["Peacock",2],["Apple TV+",2]],
+ "Smart Speaker":[["Huawei",4],["Sonos",3]],
+ "Volumen-Pkw":[["Ford",4.5],["Honda",4.5],["Geely",4],["Nissan",3.5],["Suzuki",3],["Renault",2.5]],
+ "Premium-Pkw":[["Volvo Cars",6],["Jaguar Land Rover",3],["Cadillac",3],["Genesis",2]],
+ "Lkw & Busse":[["Tata Motors",4],["Isuzu",4],["Hino",3],["Iveco",3]],
+ "Elektroautos":[["Changan",4],["Hyundai-Kia",4],["BMW",3],["Stellantis",3],["Li Auto",3]],
+ "Verpackter Kaffee":[["Keurig Dr Pepper",3],["Tchibo",2],["Melitta",1.5],["Strauss",1.5]],
+ "Heimtiernahrung":[["J.M. Smucker",2],["Unicharm",1.5],["Heristo",1]],
+ "Säuglingsnahrung":[["Yili",4],["FrieslandCampina",3],["Junlebao",2]],
+ "Süßwaren":[["Lindt",3],["Meiji",2],["Haribo",2],["Perfetti",2]],
+ "ERP-Software":[["Sage",3],["Epicor",2],["IFS",1.5],["Unit4",1],["Odoo",1]],
+ "Beschaffungssoftware":[["Jaggaer",3],["GEP",2],["Ivalua",2],["Zycus",1.5]],
+ "HR-Software":[["Dayforce",3],["Paychex",3],["Cornerstone",2]],
+ "Datenbanken & Analytics":[["IBM",4],["Snowflake",3],["Databricks",3],["Alibaba Cloud",3]]
+};
+BUILTIN.forEach(c=>c.markets.forEach(m=>{
+  const have=new Set(m.players.map(p=>p[0]));
+  let sum=m.players.reduce((t,p)=>t+p[1],0);
+  for(const [n,v] of EXTRA_PLAYERS[m.name]||[]){
+    if(have.has(n)||sum+v>99)continue;
+    m.players.push([n,v]);sum+=v;have.add(n);
+  }
+}));
+
+
+// ---------- Zustand ----------
+const LS_KEY="portfolio-blasen:claude-v1";
+let generated=[];
+try{generated=JSON.parse(localStorage.getItem(LS_KEY)||"[]")||[]}catch(e){generated=[]}
+const state={company:BUILTIN[0],sizeBy:"revenue",top:4,thr:10,sel:null};
+let sample=null, ctl=null;
+const $=s=>document.querySelector(s);
+const fmt=(v,d=0)=>v==null||isNaN(v)?"–":v.toLocaleString("de-DE",{maximumFractionDigits:d,minimumFractionDigits:d});
+const norm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/\p{M}/gu,"").trim();
+// ---------- Datenbank: geschätzte Portfolios der wichtigsten Konzerne (Stand 2025, ohne KI abrufbar) ----------
+const DATABASE=[{"id":"db-bosch","name":"Robert Bosch GmbH","hq":"Gerlingen, DE","revenue":98,"year":2025,"aliases":["bosch","robert bosch","bsh","bsh hausgeräte","neff","gaggenau","bosch rexroth","rexroth","buderus","bosch home comfort","etas","bosch power tools"],"markets":[{"name":"Kfz-Zulieferteile","basis":"Anteil am Umsatz der Automobilzulieferer (Erstausrüstung)","size":1500.0,"growth":3.0,"revenue":54.0,"players":[["Bosch Mobility",3.6,1],["Denso",3.0],["ZF Friedrichshafen",2.9],["Magna",2.8],["Hyundai Mobis",3.0],["CATL",3.6],["Aisin",2.2],["Forvia",1.9],["Continental",2.3],["Valeo",1.5]]},{"name":"Kfz-Ersatzteile","basis":"Anteil am Umsatz im Teile-Aftermarket","size":500.0,"growth":3.0,"revenue":6.0,"players":[["Bosch Automotive Aftermarket",1.2,1],["Genuine Parts (NAPA)",4.0],["AutoZone",3.7],["LKQ",2.8],["ZF Aftermarket",1.0],["Denso",0.8],["Valeo",0.6],["Mahle",0.5],["Schaeffler",0.4]]},{"name":"Hausgeräte","basis":"Anteil am Umsatz mit Haushaltsgroß- und -kleingeräten","size":300.0,"growth":3.0,"revenue":14.7,"players":[["Bosch Hausgeräte",2.5,1],["Siemens Hausgeräte (BSH)",1.8,1],["Neff/Gaggenau",0.6,1],["Haier",12.0],["Midea",11.0],["LG Electronics",7.0],["Samsung",6.0],["Gree",6.0],["Whirlpool",5.5],["Electrolux",4.5],["Panasonic",3.0],["Arçelik",2.5]]},{"name":"Elektrowerkzeuge","basis":"Anteil am Umsatz mit Elektrowerkzeugen","size":45.0,"growth":4.0,"revenue":5.9,"players":[["Bosch Power Tools",13.0,1],["TTI (Milwaukee, Ryobi)",22.0],["Stanley Black & Decker",18.0],["Makita",10.0],["Hilti",9.0],["Positec",3.0],["Koki/Metabo",3.0],["Chervon",2.5],["Festool",2.0]]},{"name":"Heiztechnik","basis":"Anteil am Umsatz mit Heizsystemen und Wärmepumpen","size":90.0,"growth":5.0,"revenue":5.4,"players":[["Bosch Home Comfort (Buderus)",6.0,1],["Daikin",9.0],["Viessmann (Carrier)",5.0],["Vaillant",4.5],["Mitsubishi Electric",4.0],["Midea",4.0],["BDR Thermea",3.5],["Ariston",3.0],["Panasonic",2.0],["Stiebel Eltron",1.5]]},{"name":"Hydraulik & Antriebe","basis":"Anteil am Umsatz mit Industrie- und Mobilhydraulik","size":45.0,"growth":3.0,"revenue":5.9,"players":[["Bosch Rexroth",13.0,1],["Parker Hannifin",16.0],["Danfoss",12.0],["Eaton",5.0],["Kawasaki",4.0],["Bucher Hydraulics",2.0],["Moog",2.0],["Helios (Sun Hydraulics)",1.5],["Linde Hydraulics",1.0],["HAWE",1.0]]}]},{"id":"db-siemens","name":"Siemens AG","hq":"München, DE","revenue":86,"year":2025,"aliases":["siemens ag","siemens healthineers","healthineers","varian","siemens mobility","siemens digital industries","siemens smart infrastructure","altair","mendix","siemens xcelerator"],"markets":[{"name":"Industrieautomation","basis":"Anteil am Umsatz mit Fabrik- und Prozessautomation","size":210.0,"growth":5.0,"revenue":13.7,"players":[["Siemens Digital Industries",6.5,1],["Emerson",6.0],["ABB",5.0],["Schneider Electric",5.0],["Rockwell Automation",4.0],["Honeywell",4.0],["Mitsubishi Electric",3.5],["Fanuc",2.5],["Omron",2.0],["Yokogawa",1.5]]},{"name":"Industriesoftware","basis":"Anteil am Umsatz mit PLM-, CAD-, Simulations- und EDA-Softwa","size":60.0,"growth":9.0,"revenue":6.6,"players":[["Siemens Digital Industries Software",11.0,1],["Synopsys (inkl. Ansys)",12.0],["Dassault Systèmes",10.0],["Autodesk",9.0],["Cadence",8.0],["PTC",4.0],["Hexagon",4.0],["AVEVA",3.0],["Bentley Systems",2.0]]},{"name":"Gebäudetechnik","basis":"Anteil am Umsatz mit Gebäudeautomation, HLK und Sicherheitst","size":160.0,"growth":6.0,"revenue":11.2,"players":[["Siemens Smart Infrastructure Buildings",7.0,1],["Johnson Controls",14.0],["Trane Technologies",12.0],["Carrier",10.0],["Daikin",8.0],["Honeywell",7.0],["Schneider Electric",6.0],["ABB",2.0],["Bosch",2.0]]},{"name":"Elektrifizierung","basis":"Anteil am Umsatz mit Nieder- und Mittelspannungstechnik und ","size":250.0,"growth":7.0,"revenue":13.0,"players":[["Siemens Electrification",5.2,1],["Schneider Electric",10.0],["Eaton",9.0],["ABB",8.0],["Siemens Energy",6.0],["Hitachi Energy",5.0],["GE Vernova",4.0],["Legrand",4.0],["Mitsubishi Electric",2.0]]},{"name":"Bahntechnik","basis":"Anteil am Umsatz mit Schienenfahrzeugen, Signal- und Leittec","size":90.0,"growth":4.0,"revenue":11.7,"players":[["Siemens Mobility",13.0,1],["CRRC",33.0],["Alstom",18.0],["Wabtec",10.0],["Hitachi Rail",9.0],["Knorr-Bremse",5.0],["Stadler",4.0],["CAF",3.0]]},{"name":"Medizinische Bildgebung","basis":"Anteil am Umsatz mit CT, MRT, Röntgen, Ultraschall und Molek","size":50.0,"growth":5.0,"revenue":13.0,"players":[["Siemens Healthineers",26.0,1],["GE HealthCare",22.0],["Philips",18.0],["Canon Medical",10.0],["United Imaging",6.0],["Fujifilm",5.0],["Mindray",2.0],["Hologic",2.0],["Samsung Medison",1.5]]},{"name":"Labordiagnostik","basis":"Anteil am Umsatz mit In-vitro-Diagnostik","size":90.0,"growth":4.0,"revenue":4.5,"players":[["Siemens Healthineers Diagnostics",5.0,1],["Roche Diagnostics",20.0],["Abbott",14.0],["Danaher (Beckman, Cepheid)",11.0],["Thermo Fisher",7.0],["bioMérieux",5.0],["BD",4.0],["Sysmex",4.0]]},{"name":"Strahlentherapie","basis":"Anteil am Umsatz mit Strahlentherapiesystemen und Software","size":9.0,"growth":6.0,"revenue":4.5,"players":[["Varian",50.0,1],["Elekta",25.0],["Accuray",4.0],["United Imaging",3.0],["Shinva",3.0],["IBA",3.0],["ViewRay",1.0],["Mevion",1.0]]}]},{"id":"db-basf","name":"BASF SE","hq":"Ludwigshafen, DE","revenue":70,"year":2025,"aliases":["basf","basf agricultural solutions","wintershall","chemetall","basf catalysts","nunhems","ultramid","styropor"],"markets":[{"name":"Basischemikalien","basis":"Anteil am Umsatz mit Petro- und Zwischenprodukten","size":700.0,"growth":3.0,"revenue":12.6,"players":[["BASF Chemicals",1.8,1],["Sinopec",5.0],["SABIC",4.5],["ExxonMobil Chemical",4.5],["Dow",4.0],["Ineos",4.0],["LyondellBasell",3.5],["PetroChina",3.0],["Formosa Plastics",2.5],["LG Chem",2.0]]},{"name":"Kunststoffe & Polyurethane","basis":"Anteil am Umsatz mit technischen Kunststoffen und Polyuretha","size":350.0,"growth":4.0,"revenue":14.7,"players":[["BASF Materials",4.2,1],["Dow",5.0],["Wanhua",4.5],["Covestro",4.0],["Celanese",3.0],["LyondellBasell",3.0],["SABIC",3.0],["Huntsman",1.6],["DuPont",1.5],["Lanxess",1.5]]},{"name":"Spezialchemikalien","basis":"Anteil am Umsatz mit Additiven, Dispersionen und Prozesschem","size":200.0,"growth":4.0,"revenue":9.0,"players":[["BASF Industrial Solutions",4.5,1],["Ecolab",8.0],["Evonik",5.0],["Dow",4.0],["Syensqo",3.5],["Arkema",3.0],["Wacker Chemie",3.0],["Lanxess",2.5],["Clariant",2.2],["Croda",1.0]]},{"name":"Katalysatoren","basis":"Anteil am Umsatz mit Auto- und Prozesskatalysatoren inkl. Ed","size":70.0,"growth":3.0,"revenue":12.6,"players":[["BASF Environmental Catalyst and Metal So",18.0,1],["Johnson Matthey",18.0],["Umicore",15.0],["Cataler",4.0],["Heraeus",4.0],["W. R. Grace",4.0],["Honeywell UOP",3.0],["Albemarle",3.0],["Clariant",2.0],["Topsoe",2.0]]},{"name":"Ernährung & Pflege","basis":"Anteil am Umsatz mit Inhaltsstoffen für Kosmetik, Lebensmitt","size":120.0,"growth":5.0,"revenue":7.2,"players":[["BASF Nutrition & Care",6.0,1],["DSM-Firmenich",10.0],["IFF",8.0],["Givaudan",6.0],["Symrise",4.5],["Dow",4.0],["Evonik",3.0],["Croda",2.5],["Ashland",2.0],["Clariant",1.5]]},{"name":"Pflanzenschutz","basis":"Anteil am Umsatz mit Pflanzenschutzmitteln","size":80.0,"growth":3.0,"revenue":8.0,"players":[["BASF Agricultural Solutions",10.0,1],["Syngenta Group",20.0],["Bayer",14.5],["Corteva",10.0],["UPL",6.0],["FMC",5.0],["Nufarm",3.5],["Sumitomo Chemical",3.5],["Albaugh",2.0]]}]},{"id":"db-bayer","name":"Bayer AG","hq":"Leverkusen, DE","revenue":50,"year":2025,"aliases":["bayer","bayer crop science","monsanto","dekalb","asgrow","roundup","xarelto","eylea","aspirin","bepanthen","claritin","elevit","bayer consumer health"],"markets":[{"name":"Pflanzenschutz","basis":"Anteil am Umsatz mit Pflanzenschutzmitteln","size":80.0,"growth":3.0,"revenue":11.6,"players":[["Bayer Crop Protection",14.5,1],["Syngenta Group",20.0],["Corteva",10.0],["BASF",10.0],["UPL",6.0],["FMC",5.0],["Nufarm",3.5],["Sumitomo Chemical",3.5],["Albaugh",2.0]]},{"name":"Saatgut","basis":"Anteil am Umsatz mit Saatgut und Pflanzeneigenschaften","size":55.0,"growth":4.0,"revenue":10.5,"players":[["Bayer (Dekalb, Asgrow)",19.0,1],["Corteva (Pioneer)",20.0],["Syngenta",7.0],["Limagrain",5.0],["KWS",3.5],["BASF",2.5],["Longping",2.5],["DLF",1.5],["Rijk Zwaan",1.5],["Sakata",1.0]]},{"name":"Verschreibungspflichtige Arzneimittel","basis":"Anteil am Umsatz mit Rx-Arzneimitteln","size":1500.0,"growth":6.0,"revenue":19.5,"players":[["Bayer Pharmaceuticals",1.3,1],["Johnson & Johnson",4.5],["Merck & Co.",4.0],["Pfizer",4.0],["Eli Lilly",4.0],["AbbVie",3.8],["AstraZeneca",3.6],["Roche",3.5],["Novartis",3.3],["Novo Nordisk",3.0],["Sanofi",2.8]]},{"name":"Rezeptfreie Arzneimittel","basis":"Anteil am Umsatz mit OTC-Arzneimitteln und Nahrungsergänzung","size":180.0,"growth":4.0,"revenue":6.5,"players":[["Bayer Consumer Health",3.6,1],["Kenvue",7.5],["Haleon",7.0],["Reckitt",4.0],["Opella (Sanofi)",3.0],["Procter & Gamble Health",3.0],["Perrigo",2.3],["Taisho",1.5],["Church & Dwight",1.0]]}]},{"id":"db-bmw","name":"Bayerische Motoren Werke AG (BMW Group)","hq":"München, DE","revenue":155,"year":2025,"aliases":["bmw","bmw group","mini","rolls-royce motor cars","rolls-royce","bmw motorrad","bmw m","bmw financial services","bmw i"],"markets":[{"name":"Premium-Pkw","basis":"Anteil am Umsatz mit Premium-Pkw","size":600.0,"growth":3.0,"revenue":105.6,"players":[["BMW",15.5,1],["Mini",1.5,1],["Rolls-Royce",0.6,1],["Mercedes-Benz",16.0],["Audi",11.0],["Lexus",5.5],["Porsche",4.5],["Volvo Cars",4.0],["Land Rover",4.0],["Cadillac",3.0],["Genesis",1.5],["Lincoln",1.5],["Acura",1.2]]},{"name":"Elektroautos","basis":"Anteil am Umsatz mit batterieelektrischen und Plug-in-Pkw","size":700.0,"growth":20.0,"revenue":23.8,"players":[["BMW",3.0,1],["Mini",0.4,1],["BYD",15.0],["Tesla",12.0],["Geely (inkl. Zeekr, Volvo)",7.0],["Volkswagen Group",6.0],["SAIC-GM-Wuling",4.0],["Hyundai-Kia",3.0],["Li Auto",2.5],["Changan",2.5],["Mercedes-Benz",2.2],["Xiaomi",2.0]]},{"name":"Motorräder","basis":"Anteil am Umsatz mit Motorrädern und Rollern","size":130.0,"growth":4.0,"revenue":3.4,"players":[["BMW Motorrad",2.6,1],["Honda",30.0],["Yamaha",10.0],["Hero MotoCorp",5.0],["Bajaj",5.0],["TVS",4.0],["Suzuki",4.0],["Harley-Davidson",3.5],["Kawasaki",3.0],["KTM",2.0],["Royal Enfield",1.5]]},{"name":"Autofinanzierung","basis":"Anteil am Umsatz mit Kfz-Krediten und Leasing","size":400.0,"growth":4.0,"revenue":20.0,"players":[["BMW Financial Services",5.0,1],["Toyota Financial Services",7.0],["Volkswagen Financial Services",7.0],["Mercedes-Benz Mobility",4.5],["GM Financial",4.0],["Ford Credit",3.5],["Ally Financial",3.0],["Santander Consumer",3.0],["Honda Finance",2.5],["Capital One Auto",2.0]]}]},{"id":"db-mercedes","name":"Mercedes-Benz Group AG","hq":"Stuttgart, DE","revenue":148,"year":2025,"aliases":["mercedes","mercedes-benz","daimler","mercedes-amg","amg","maybach","mercedes-maybach","mercedes-benz vans","mercedes-benz mobility","smart"],"markets":[{"name":"Premium-Pkw","basis":"Anteil am Umsatz mit Premium-Pkw","size":600.0,"growth":3.0,"revenue":96.0,"players":[["Mercedes-Benz",14.0,1],["Mercedes-AMG",1.5,1],["Mercedes-Maybach",0.5,1],["BMW",15.5],["Audi",11.0],["Lexus",5.5],["Porsche",4.5],["Volvo Cars",4.0],["Land Rover",4.0],["Cadillac",3.0],["Mini",1.5],["Genesis",1.5],["Lincoln",1.5]]},{"name":"Elektroautos","basis":"Anteil am Umsatz mit batterieelektrischen und Plug-in-Pkw","size":700.0,"growth":20.0,"revenue":15.4,"players":[["Mercedes-Benz",2.2,1],["BYD",15.0],["Tesla",12.0],["Geely (inkl. Zeekr, Volvo)",7.0],["Volkswagen Group",6.0],["SAIC-GM-Wuling",4.0],["BMW (inkl. Mini)",3.4],["Hyundai-Kia",3.0],["Li Auto",2.5],["Changan",2.5],["Xiaomi",2.0]]},{"name":"Transporter","basis":"Anteil am Umsatz mit leichten Nutzfahrzeugen (Vans)","size":220.0,"growth":3.0,"revenue":19.8,"players":[["Mercedes-Benz Vans",9.0,1],["Ford",15.0],["Stellantis",14.0],["Toyota",8.0],["Renault",6.0],["Volkswagen Nutzfahrzeuge",6.0],["General Motors",6.0],["Nissan",3.0],["Iveco",2.0],["Hyundai",2.0]]},{"name":"Autofinanzierung","basis":"Anteil am Umsatz mit Kfz-Krediten und Leasing","size":400.0,"growth":4.0,"revenue":18.0,"players":[["Mercedes-Benz Mobility",4.5,1],["Toyota Financial Services",7.0],["Volkswagen Financial Services",7.0],["BMW Financial Services",5.0],["GM Financial",4.0],["Ford Credit",3.5],["Ally Financial",3.0],["Santander Consumer",3.0],["Honda Finance",2.5],["Capital One Auto",2.0]]}]},{"id":"db-allianz","name":"Allianz SE","hq":"München, DE","revenue":195,"year":2025,"aliases":["allianz","pimco","allianz global investors","allianz trade","euler hermes","allianz partners","allianz direct","agcs","allianz commercial"],"markets":[{"name":"Sachversicherung","basis":"Anteil an Bruttoprämien Schaden/Unfall weltweit","size":2400.0,"growth":5.0,"revenue":86.0,"players":[["Allianz",3.6,1],["State Farm",4.0],["Berkshire Hathaway",3.5],["Progressive",3.2],["PICC",3.0],["Allstate",2.5],["Chubb",2.4],["AXA",2.2],["Tokio Marine",2.0],["Zurich",2.0]]},{"name":"Lebensversicherung","basis":"Anteil an Bruttoprämien Leben/Kranken weltweit","size":3000.0,"growth":5.0,"revenue":81.0,"players":[["Allianz",2.7,1],["China Life",3.6],["Ping An",3.0],["Generali",2.2],["Nippon Life",2.0],["AXA",1.8],["Prudential Financial",1.6],["MetLife",1.5],["Legal & General",1.5],["Dai-ichi Life",1.5]]},{"name":"Vermögensverwaltung","basis":"Anteil an Erträgen der Asset-Management-Branche","size":600.0,"growth":6.0,"revenue":9.0,"players":[["PIMCO",1.0,1],["Allianz Global Investors",0.5,1],["BlackRock",3.4],["Fidelity",3.0],["JPMorgan Asset Management",1.7],["Vanguard",1.5],["Goldman Sachs AM",1.3],["Capital Group",1.2],["Invesco",1.0],["Amundi",0.6],["UBS Asset Management",0.6]]},{"name":"Kreditversicherung","basis":"Anteil an Prämien der Warenkreditversicherung","size":13.0,"growth":4.0,"revenue":4.2,"players":[["Allianz Trade",32.0,1],["Atradius",20.0],["Coface",15.0],["Sinosure",10.0],["Chubb",2.0],["AIG",2.0],["QBE",2.0],["Zurich",2.0],["Credendo",2.0]]},{"name":"Reiseversicherung","basis":"Anteil am Umsatz mit Reiseversicherung und Assistance","size":30.0,"growth":7.0,"revenue":6.0,"players":[["Allianz Partners",20.0,1],["AXA Partners",9.0],["Generali Global Assistance",5.0],["AIG Travel",5.0],["Chubb",4.0],["Zurich",3.0],["Tokio Marine",3.0],["Mapfre",3.0],["nib (World Nomads)",1.5]]}]},{"id":"db-telekom","name":"Deutsche Telekom AG","hq":"Bonn, DE","revenue":128,"year":2025,"aliases":["deutsche telekom","telekom","t-mobile","t-mobile us","magenta","t-systems","congstar","ote","magyar telekom","hrvatski telekom","sprint"],"markets":[{"name":"Mobilfunkdienste","basis":"Anteil am Umsatz mit Mobilfunkdiensten weltweit","size":1000.0,"growth":2.0,"revenue":87.0,"players":[["T-Mobile US",6.2,1],["Telekom Deutschland & Europa",2.5,1],["China Mobile",10.0],["Verizon",8.0],["AT&T",6.0],["Vodafone",3.5],["América Móvil",3.0],["China Unicom",3.0],["NTT Docomo",3.0],["Reliance Jio",2.5],["Bharti Airtel",2.5],["Orange",2.5]]},{"name":"Festnetz & Breitband","basis":"Anteil am Umsatz mit Festnetz- und Breitbanddiensten","size":600.0,"growth":2.0,"revenue":21.0,"players":[["Deutsche Telekom",3.5,1],["Charter",7.0],["Comcast",6.0],["China Telecom",6.0],["China Mobile",5.0],["AT&T",4.0],["Verizon",4.0],["NTT",3.0],["Orange",2.5],["Vodafone",2.0]]},{"name":"Endgeräte-Handel","basis":"Anteil am Umsatz mit dem Verkauf mobiler Endgeräte","size":480.0,"growth":3.0,"revenue":16.0,"players":[["T-Mobile / Telekom",3.3,1],["Apple (Direktvertrieb)",10.0],["Amazon",6.0],["Verizon",5.0],["AT&T",4.5],["Samsung (Direktvertrieb)",4.0],["JD.com",4.0],["China Mobile",3.0],["Best Buy",2.0],["Vodafone",1.5]]},{"name":"IT-Dienstleistungen","basis":"Anteil am Umsatz mit IT-Services und Outsourcing","size":1400.0,"growth":6.0,"revenue":4.2,"players":[["T-Systems",0.3,1],["Accenture",4.6],["NTT Data",2.2],["TCS",2.0],["Capgemini",1.7],["IBM Consulting",1.5],["Fujitsu",1.5],["Infosys",1.4],["Cognizant",1.4],["Kyndryl",1.1],["DXC",0.9]]}]},{"id":"db-adidas","name":"adidas AG","hq":"Herzogenaurach, DE","revenue":28,"year":2025,"aliases":["adidas","adidas originals","adidas performance","yeezy","y-3","terrex"],"markets":[{"name":"Sportschuhe","basis":"Anteil am Umsatz mit Sport- und Sneaker-Schuhen","size":160.0,"growth":5.0,"revenue":11.2,"players":[["adidas",7.0,1],["Nike",23.0],["Skechers",5.5],["New Balance",5.0],["Anta (inkl. Fila)",4.0],["Puma",3.5],["Asics",3.5],["On",1.6],["Hoka (Deckers)",1.6],["Li Ning",1.5]]},{"name":"Sportbekleidung","basis":"Anteil am Umsatz mit Sport- und Athleisure-Bekleidung","size":230.0,"growth":5.0,"revenue":8.0,"players":[["adidas",3.5,1],["Nike",9.0],["Lululemon",4.5],["Anta",3.5],["Decathlon",3.5],["Fast Retailing",3.0],["VF Corp (The North Face)",2.0],["Puma",1.8],["Under Armour",1.8],["Columbia",1.3]]},{"name":"Fußballartikel","basis":"Anteil am Umsatz mit Fußballschuhen, Trikots und Bällen","size":25.0,"growth":6.0,"revenue":6.5,"players":[["adidas",26.0,1],["Nike",30.0],["Puma",15.0],["Joma",3.0],["New Balance",2.0],["Kappa",1.5],["Umbro",1.5],["Mizuno",1.5],["Macron",1.0],["Hummel",1.0]]},{"name":"Sportzubehör","basis":"Anteil am Umsatz mit Taschen, Bällen und Sportausrüstung","size":50.0,"growth":4.0,"revenue":1.3,"players":[["adidas",2.5,1],["Nike",5.0],["Decathlon",4.0],["Acushnet",2.5],["Wilson (Amer Sports)",2.0],["Topgolf Callaway",2.0],["Puma",1.5],["Under Armour",1.0],["Yonex",1.0]]}]},{"id":"db-henkel","name":"Henkel AG & Co. KGaA","hq":"Düsseldorf, DE","revenue":23.5,"year":2025,"aliases":["henkel","persil","schwarzkopf","syoss","loctite","pattex","pritt","technomelt","bonderite","perwoll","pril","somat","bref","fa","ceresit","all"],"markets":[{"name":"Industrieklebstoffe","basis":"Anteil am Umsatz mit Industrieklebstoffen, Dicht- und Oberfl","size":70.0,"growth":4.0,"revenue":10.2,"players":[["Loctite",8.0,1],["Technomelt",4.0,1],["Bonderite",2.5,1],["3M",8.0],["Sika",6.0],["H.B. Fuller",5.0],["Arkema (Bostik)",5.0],["Dow",3.5],["Avery Dennison",3.0],["Illinois Tool Works",2.5],["Huntsman",2.0],["Wacker Chemie",1.5]]},{"name":"Konsumklebstoffe","basis":"Anteil am Umsatz mit Klebstoffen für Endverbraucher und Hand","size":20.0,"growth":3.0,"revenue":2.4,"players":[["Pattex",6.0,1],["Pritt",3.0,1],["Ceresit",3.0,1],["3M (Scotch)",7.0],["Bostik",5.0],["UHU (Bolton)",4.0],["tesa",4.0],["Gorilla Glue",3.0],["Newell (Elmer's)",3.0],["Sika",3.0],["Soudal",2.0]]},{"name":"Waschmittel","basis":"Anteil am Umsatz mit Wasch- und Wäschepflegemitteln","size":140.0,"growth":4.0,"revenue":5.9,"players":[["Persil",3.3,1],["Perwoll",0.5,1],["all",0.4,1],["Procter & Gamble",28.0],["Unilever",12.0],["Kao",3.0],["Nice Group",3.0],["Liby",3.0],["Church & Dwight",2.0],["Lion",1.5],["Reckitt",1.5]]},{"name":"Haushaltsreiniger","basis":"Anteil am Umsatz mit Spül- und Reinigungsmitteln","size":90.0,"growth":4.0,"revenue":1.4,"players":[["Somat",0.8,1],["Pril",0.4,1],["Bref",0.4,1],["Procter & Gamble",13.0],["Reckitt",10.0],["Unilever",7.0],["Clorox",6.0],["SC Johnson",6.0],["Colgate-Palmolive",2.0],["Kao",2.0],["Church & Dwight",1.0]]},{"name":"Haarpflege","basis":"Anteil am Umsatz mit Haarpflege- und Colorationsprodukten","size":100.0,"growth":4.0,"revenue":4.0,"players":[["Schwarzkopf",2.4,1],["Schwarzkopf Professional",1.0,1],["Syoss",0.6,1],["L'Oréal",20.0],["Procter & Gamble",10.0],["Unilever",9.0],["Kao",3.0],["Wella",2.5],["Shiseido",1.5],["Beiersdorf",1.0],["Estée Lauder",1.0]]}]},{"id":"db-continental","name":"Continental AG","hq":"Hannover, DE","revenue":23,"year":2025,"aliases":["continental","conti","contitech","general tire","semperit reifen","barum","uniroyal","gislaved","phoenix"],"markets":[{"name":"Pkw-Reifen","basis":"Anteil am Umsatz","size":180.0,"growth":3.0,"revenue":12.0,"players":[["Continental Pkw-Reifen",6.7,1],["Michelin",14.0],["Bridgestone",13.0],["Goodyear",9.0],["Sumitomo Rubber",5.0],["Hankook",5.0],["Pirelli",4.5],["Yokohama",3.5],["Zhongce Rubber",3.0],["Toyo Tires",2.0]]},{"name":"Nutzfahrzeugreifen","basis":"Anteil am Umsatz","size":70.0,"growth":3.0,"revenue":3.8,"players":[["Continental Nfz-Reifen",5.4,1],["Bridgestone",15.0],["Michelin",14.0],["Goodyear",8.0],["Zhongce Rubber",6.0],["Sailun",4.0],["Linglong",4.0],["Hankook",3.5],["Triangle Tyre",3.5],["Double Coin",3.0]]},{"name":"Kfz-Kautschukteile","basis":"Anteil am Umsatz (Schläuche, Riemen, Dichtungen, Luftfedern)","size":60.0,"growth":2.0,"revenue":4.0,"players":[["ContiTech Automotive",6.7,1],["Sumitomo Riko",7.0],["Toyoda Gosei",6.0],["Freudenberg",6.0],["Hutchinson",5.0],["Cooper Standard",4.5],["Gates",4.0],["NOK",4.0],["Trelleborg",3.0],["Bridgestone",2.0]]},{"name":"Industrieschläuche","basis":"Anteil am Umsatz","size":16.0,"growth":4.0,"revenue":1.6,"players":[["ContiTech Schlauchtechnik",10.0,1],["Parker Hannifin",14.0],["Gates",9.0],["Eaton",8.0],["Trelleborg",4.0],["Manuli",3.0],["Alfagomma",3.0],["Semperit",3.0],["Kuriyama",2.0],["Yokohama",2.0]]},{"name":"Fördergurte","basis":"Anteil am Umsatz","size":7.0,"growth":4.0,"revenue":1.3,"players":[["ContiTech Fördergurte",18.6,1],["Michelin (Fenner)",13.0],["Bando",4.0],["Habasit",4.0],["Bridgestone",4.0],["Wuxi Boton",4.0],["Sempertrans",3.0],["Yokohama",3.0],["Ammeraal Beltech",3.0],["Forbo Siegling",3.0]]}]},{"id":"db-infineon","name":"Infineon Technologies AG","hq":"Neubiberg, DE","revenue":16,"year":2025,"aliases":["infineon","infineon technologies","international rectifier","cypress","cypress semiconductor","gan systems","aurix","optiga","coolmos"],"markets":[{"name":"Automobil-Halbleiter","basis":"Anteil am Umsatz","size":70.0,"growth":7.0,"revenue":8.0,"players":[["Infineon Automotive",11.4,1],["NXP",9.0],["STMicroelectronics",8.0],["Texas Instruments",7.5],["Renesas",6.5],["onsemi",5.0],["Bosch",4.0],["Nvidia",3.0],["Qualcomm",3.0],["Analog Devices",3.0]]},{"name":"Stromversorgungs-Chips","basis":"Anteil am Umsatz (Power-ICs und MOSFETs)","size":40.0,"growth":9.0,"revenue":3.2,"players":[["Infineon Power & Sensor Systems",8.0,1],["Texas Instruments",15.0],["Analog Devices",8.0],["onsemi",5.0],["Monolithic Power",5.0],["STMicroelectronics",5.0],["Renesas",4.0],["Vishay",3.0],["Nexperia",3.0],["Rohm",2.0]]},{"name":"Industrie-Leistungshalbleiter","basis":"Anteil am Umsatz","size":25.0,"growth":8.0,"revenue":2.6,"players":[["Infineon Green Industrial Power",10.4,1],["Mitsubishi Electric",8.0],["onsemi",6.0],["STMicroelectronics",6.0],["Fuji Electric",6.0],["Toshiba",4.0],["Semikron Danfoss",4.0],["Vishay",3.0],["Rohm",3.0],["Wolfspeed",2.0]]},{"name":"Mikrocontroller","basis":"Anteil am Umsatz (ohne Automotive)","size":28.0,"growth":6.0,"revenue":1.3,"players":[["Infineon PSoC/XMC",4.6,1],["Renesas",15.0],["Microchip",15.0],["NXP",14.0],["STMicroelectronics",14.0],["Texas Instruments",6.0],["Nuvoton",2.0],["GigaDevice",2.0],["Silicon Labs",2.0],["Nordic Semiconductor",1.5]]},{"name":"Sicherheits-Chips","basis":"Anteil am Umsatz (Smartcard- und Security-ICs)","size":7.0,"growth":6.0,"revenue":1.0,"players":[["Infineon Connected Secure Systems",14.0,1],["NXP",15.0],["Samsung",10.0],["STMicroelectronics",9.0],["Huada Semiconductor",6.0],["Fudan Microelectronics",5.0],["Datang Microelectronics",4.0],["Microchip",3.0],["Nuvoton",3.0],["Tongxin Micro",3.0]]}]},{"id":"db-lufthansa","name":"Deutsche Lufthansa AG","hq":"Köln, DE","revenue":44,"year":2025,"aliases":["lufthansa","lufthansa group","swiss","swiss international air lines","austrian airlines","brussels airlines","eurowings","discover airlines","lufthansa cargo","lufthansa technik","edelweiss","miles & more"],"markets":[{"name":"Passagierluftfahrt","basis":"Anteil am Umsatz weltweit","size":900.0,"growth":5.0,"revenue":26.1,"players":[["Lufthansa",1.8,1],["SWISS",0.7,1],["Austrian Airlines",0.3,1],["Brussels Airlines",0.2,1],["Delta Air Lines",6.5],["United Airlines",6.5],["American Airlines",6.0],["Air France-KLM",3.9],["IAG",3.9],["Emirates",3.8],["Southwest Airlines",3.0],["China Southern",2.6],["Turkish Airlines",2.5],["Air China",2.3]]},{"name":"Billigflug Europa","basis":"Anteil am Umsatz","size":60.0,"growth":6.0,"revenue":2.6,"players":[["Eurowings",4.3,1],["Ryanair",25.0],["easyJet",16.0],["Wizz Air",9.0],["Jet2",7.0],["Vueling",5.0],["Pegasus",4.0],["Norwegian",3.5],["Transavia",3.0],["Volotea",1.5]]},{"name":"MRO-Dienstleistungen","basis":"Anteil am Umsatz (Flugzeugwartung)","size":110.0,"growth":6.0,"revenue":9.5,"players":[["Lufthansa Technik",8.6,1],["GE Aerospace",12.0],["Pratt & Whitney",9.0],["Rolls-Royce",7.0],["MTU Maintenance",6.0],["AFI KLM E&M",4.0],["ST Engineering",3.5],["HAECO",2.0],["AAR",2.0],["SR Technics",1.5]]},{"name":"Luftfracht","basis":"Anteil am Umsatz","size":150.0,"growth":4.0,"revenue":4.0,"players":[["Lufthansa Cargo",2.7,1],["FedEx",10.0],["UPS",6.0],["Qatar Airways Cargo",5.0],["Emirates SkyCargo",4.5],["Turkish Cargo",3.5],["Cathay Cargo",3.0],["Korean Air Cargo",3.0],["Atlas Air",2.5],["Cargolux",2.0]]}]},{"id":"db-dhl","name":"DHL Group","hq":"Bonn, DE","revenue":93,"year":2025,"aliases":["dhl","dhl group","deutsche post","deutsche post dhl","dhl express","dhl global forwarding","dhl supply chain","dhl ecommerce","dhl paket","post & paket deutschland","streetscooter"],"markets":[{"name":"Internationaler Expressversand","basis":"Anteil am Umsatz","size":130.0,"growth":5.0,"revenue":28.0,"players":[["DHL Express",21.5,1],["FedEx",18.0],["UPS",17.0],["SF Express",6.0],["Cainiao",3.0],["Yamato",2.0],["DPDgroup",2.0],["GLS",1.5],["Japan Post",1.5],["Aramex",1.2]]},{"name":"Kontraktlogistik","basis":"Anteil am Umsatz","size":330.0,"growth":6.0,"revenue":21.0,"players":[["DHL Supply Chain",6.4,1],["GXO",4.0],["DSV",3.0],["Ryder",3.0],["Kuehne+Nagel",2.5],["CEVA Logistics",2.5],["Geodis",2.5],["Rhenus",2.0],["Nippon Express",2.0],["Fiege",1.0]]},{"name":"Speditionslogistik","basis":"Anteil am Umsatz (Luft- und Seefracht)","size":250.0,"growth":4.0,"revenue":20.0,"players":[["DHL Global Forwarding",8.0,1],["DSV",11.0],["Kuehne+Nagel",10.0],["C.H. Robinson",6.0],["Nippon Express",6.0],["CEVA Logistics",5.0],["Sinotrans",4.5],["Expeditors",3.5],["Kerry Logistics",2.5],["Geodis",2.5]]},{"name":"Paketzustellung Europa","basis":"Anteil am Umsatz","size":120.0,"growth":4.0,"revenue":13.0,"players":[["DHL Paket",8.0,1],["DHL eCommerce Europa",2.8,1],["DPDgroup",12.0],["Amazon Logistics",12.0],["UPS",7.0],["La Poste Colissimo",6.0],["GLS",5.5],["Evri/Hermes",5.0],["Royal Mail",5.0],["PostNL",3.5],["InPost",3.0]]},{"name":"Briefpost","basis":"Anteil am Umsatz weltweit","size":140.0,"growth":-4.0,"revenue":9.0,"players":[["Deutsche Post Brief",6.4,1],["USPS",33.0],["Japan Post",7.0],["La Poste",6.0],["China Post",5.0],["Royal Mail",5.0],["Canada Post",2.5],["Poste Italiane",2.0],["PostNL",1.5],["Australia Post",1.5]]}]},{"id":"db-beiersdorf","name":"Beiersdorf AG","hq":"Hamburg, DE","revenue":11,"year":2025,"aliases":["beiersdorf","nivea","eucerin","aquaphor","la prairie","hansaplast","labello","tesa","coppertone","chantecaille","florena"],"markets":[{"name":"Hautpflege","basis":"Anteil am Umsatz","size":160.0,"growth":5.0,"revenue":7.5,"players":[["Nivea",3.0,1],["Eucerin",1.3,1],["Aquaphor",0.4,1],["L'Oréal",13.0],["Estée Lauder",7.0],["Unilever",5.0],["P&G",4.5],["Shiseido",4.0],["Kenvue",3.0],["Amorepacific",2.0],["LVMH",2.0],["Kao",2.0]]},{"name":"Technische Klebebänder","basis":"Anteil am Umsatz","size":70.0,"growth":5.0,"revenue":2.0,"players":[["tesa",2.9,1],["3M",15.0],["Nitto Denko",8.0],["Avery Dennison",6.0],["Berry Global",3.0],["Intertape Polymer",2.0],["Shurtape",2.0],["Lintec",2.0],["Lohmann",1.5],["Scapa",1.0]]},{"name":"Deodorants","basis":"Anteil am Umsatz","size":30.0,"growth":4.0,"revenue":1.2,"players":[["Nivea Deo",4.0,1],["Unilever",28.0],["P&G",9.0],["Henkel",5.0],["Colgate-Palmolive",3.0],["L'Oréal",2.0],["Church & Dwight",2.0],["Shiseido",1.5],["Kao",1.5]]},{"name":"Luxus-Hautpflege","basis":"Anteil am Umsatz","size":60.0,"growth":4.0,"revenue":0.7,"players":[["La Prairie",1.2,1],["Estée Lauder",15.0],["L'Oréal",14.0],["Shiseido",8.0],["LVMH",6.0],["Chanel",6.0],["Amorepacific",3.0],["Clarins",2.5],["Sisley",2.0],["Kosé",2.0]]}]},{"id":"db-puma","name":"PUMA SE","hq":"Herzogenaurach, DE","revenue":9.2,"year":2025,"aliases":["puma","cobra golf","cobra puma golf","stichd","puma motorsport"],"markets":[{"name":"Sportschuhe","basis":"Anteil am Umsatz","size":160.0,"growth":5.0,"revenue":5.0,"players":[["Puma Schuhe",3.1,1],["Nike",25.0],["Adidas",13.0],["Skechers",5.5],["New Balance",4.5],["Asics",3.5],["Anta",2.5],["Hoka",2.0],["On",1.8],["Li Ning",1.5]]},{"name":"Sportbekleidung","basis":"Anteil am Umsatz","size":220.0,"growth":5.0,"revenue":3.2,"players":[["Puma Textil",1.5,1],["Nike",9.0],["Adidas",6.0],["Lululemon",4.5],["Anta",3.0],["Decathlon",3.0],["VF Corp",2.0],["Fanatics",2.0],["Under Armour",1.8],["Columbia",1.3]]},{"name":"Sportzubehör","basis":"Anteil am Umsatz","size":50.0,"growth":4.0,"revenue":0.5,"players":[["Puma Accessoires",1.0,1],["Nike",6.0],["Decathlon",6.0],["Adidas",5.0],["Amer Sports (Wilson)",4.0],["Yonex",2.0],["Mizuno",1.5],["Under Armour",1.0],["Spalding",1.0]]},{"name":"Golfausrüstung","basis":"Anteil am Umsatz","size":20.0,"growth":4.0,"revenue":0.5,"players":[["Cobra Golf",2.5,1],["Acushnet (Titleist)",13.0],["Callaway",12.0],["TaylorMade",10.0],["Ping",5.0],["Sumitomo (Srixon)",4.0],["Mizuno",2.0],["Bridgestone Golf",1.5],["Wilson",1.0]]}]},{"id":"db-porsche","name":"Dr. Ing. h.c. F. Porsche AG","hq":"Stuttgart, DE","revenue":41,"year":2025,"aliases":["porsche","porsche ag","porsche 911","cayenne","panamera","macan","taycan","718 boxster","718 cayman","porsche financial services","porsche design","mhp","cellforce"],"markets":[{"name":"Premium-Pkw","basis":"Anteil am Umsatz","size":600.0,"growth":3.0,"revenue":27.6,"players":[["Porsche Cayenne",2.0,1],["Porsche 911",1.4,1],["Porsche Panamera",0.5,1],["Porsche Macan",0.4,1],["Porsche 718",0.3,1],["BMW",17.0],["Mercedes-Benz",16.0],["Audi",9.0],["Tesla",6.0],["Lexus",5.0],["Volvo Cars",4.0],["Jaguar Land Rover",4.0],["Cadillac",3.0],["Lincoln",1.5],["Ferrari",1.2]]},{"name":"Elektroautos","basis":"Anteil am Umsatz","size":700.0,"growth":20.0,"revenue":4.5,"players":[["Porsche Taycan",0.4,1],["Porsche Macan Electric",0.2,1],["BYD",18.0],["Tesla",14.0],["Geely",8.0],["VW-Konzern",6.0],["SAIC",5.0],["Hyundai-Kia",3.5],["BMW",3.5],["Li Auto",3.0],["Xiaomi",2.5],["Leapmotor",2.0]]},{"name":"Kfz-Aftermarket","basis":"Anteil am Umsatz (Ersatzteile und Service)","size":450.0,"growth":4.0,"revenue":4.5,"players":[["Porsche Teile & Service",1.0,1],["Bosch",4.0],["VW-Konzern",3.5],["Denso",3.0],["Toyota",3.0],["ZF",2.5],["Mercedes-Benz",2.5],["BMW",2.0],["Valeo",1.5],["Schaeffler",1.2]]},{"name":"Autofinanzierung","basis":"Anteil am Umsatz","size":300.0,"growth":5.0,"revenue":3.5,"players":[["Porsche Financial Services",1.2,1],["VW Financial Services",8.0],["Mercedes-Benz Mobility",7.0],["BMW Financial Services",6.5],["Toyota Financial Services",6.0],["GM Financial",5.0],["Ford Credit",4.5],["Santander Consumer",4.0],["Ally Financial",3.0],["Stellantis Financial",2.0]]}]},{"id":"db-rheinmetall","name":"Rheinmetall AG","hq":"Düsseldorf, DE","revenue":12.5,"year":2025,"aliases":["rheinmetall","rheinmetall defence","rheinmetall waffe munition","kspg","pierburg","kolbenschmidt","american rheinmetall","expal","boxer","lynx","skyranger"],"markets":[{"name":"Militärfahrzeuge","basis":"Anteil am Umsatz","size":60.0,"growth":7.0,"revenue":4.2,"players":[["Rheinmetall Vehicle Systems",7.0,1],["General Dynamics Land Systems",12.0],["BAE Systems",8.0],["Uralvagonzavod",8.0],["Norinco",7.0],["KNDS",6.0],["Hanwha Aerospace",6.0],["Oshkosh Defense",5.0],["Hyundai Rotem",4.0],["Patria",2.0]]},{"name":"Munition","basis":"Anteil am Umsatz","size":35.0,"growth":9.0,"revenue":4.0,"players":[["Rheinmetall Weapon & Ammunition",11.4,1],["General Dynamics OTS",9.0],["Northrop Grumman",8.0],["BAE Systems",7.0],["Olin Winchester",5.0],["Hanwha",4.0],["Nammo",3.5],["KNDS",3.0],["Elbit Systems",3.0],["Poongsan",2.5]]},{"name":"Militärelektronik","basis":"Anteil am Umsatz","size":150.0,"growth":6.0,"revenue":2.4,"players":[["Rheinmetall Electronic Solutions",1.6,1],["RTX",10.0],["L3Harris",9.0],["Lockheed Martin",8.0],["Northrop Grumman",8.0],["Thales",6.0],["BAE Systems",6.0],["Leonardo",5.0],["Elbit Systems",3.5],["Saab",2.5],["Hensoldt",1.5]]},{"name":"Motorkomponenten","basis":"Anteil am Umsatz (Kolben, Pumpen, Ventile)","size":60.0,"growth":0.0,"revenue":2.2,"players":[["Rheinmetall Power Systems",3.7,1],["Mahle",13.0],["Bosch",8.0],["Tenneco",6.0],["Denso",6.0],["Aisin",5.0],["Mann+Hummel",5.0],["Hitachi Astemo",4.0],["Schaeffler",4.0],["Hanon Systems",2.5]]}]},{"id":"db-airbus","name":"Airbus SE","hq":"Leiden, NL","revenue":81,"year":2025,"aliases":["airbus","airbus commercial aircraft","airbus helicopters","airbus defence and space","a320","a350","a330","a220","eurocopter","a400m","eurofighter","atr"],"markets":[{"name":"Verkehrsflugzeuge","basis":"Anteil am Umsatz (inkl. Services)","size":150.0,"growth":8.0,"revenue":58.0,"players":[["A320neo-Familie",26.5,1],["A350",7.0,1],["A330neo",3.0,1],["A220",2.2,1],["Boeing",27.0],["Embraer",3.5],["COMAC",2.0],["ATR",1.2],["UAC",1.0],["De Havilland Canada",0.5]]},{"name":"Hubschrauber","basis":"Anteil am Umsatz","size":40.0,"growth":5.0,"revenue":9.0,"players":[["Airbus Helicopters",22.5,1],["Sikorsky",18.0],["Leonardo Helicopters",13.0],["Boeing",12.0],["Bell Textron",10.0],["Russian Helicopters",7.0],["AVIC",6.0],["HAL",2.0],["Robinson",1.0]]},{"name":"Militärflugzeuge","basis":"Anteil am Umsatz","size":120.0,"growth":5.0,"revenue":6.0,"players":[["Airbus Defence (A400M, MRTT, Eurofighter",5.0,1],["Lockheed Martin",30.0],["Boeing",12.0],["AVIC",12.0],["UAC",6.0],["Dassault Aviation",5.0],["BAE Systems",5.0],["Saab",2.0],["KAI",1.5],["Embraer",1.0]]},{"name":"Militärelektronik","basis":"Anteil am Umsatz","size":150.0,"growth":6.0,"revenue":4.5,"players":[["Airbus Defence (Connected Intelligence)",3.0,1],["RTX",10.0],["L3Harris",9.0],["Lockheed Martin",8.0],["Northrop Grumman",8.0],["Thales",6.0],["BAE Systems",6.0],["Leonardo",5.0],["Elbit Systems",3.5],["Saab",2.5]]},{"name":"Raumfahrtsysteme","basis":"Anteil am Umsatz (Satelliten und Trägersysteme)","size":120.0,"growth":7.0,"revenue":2.8,"players":[["Airbus Space Systems",2.3,1],["SpaceX",12.0],["CASC",8.0],["Lockheed Martin",6.0],["Boeing",4.0],["Northrop Grumman",4.0],["Thales Alenia Space",3.0],["ULA",2.0],["Maxar",1.5],["Mitsubishi Heavy",1.0]]}]},{"id":"db-schwarz","name":"Schwarz Gruppe","hq":"Neckarsulm, DE","revenue":190,"year":2025,"aliases":["schwarz gruppe","schwarz group","lidl","kaufland","prezero","schwarz digits","stackit","schwarz produktion","greencycle","xm cyber"],"markets":[{"name":"Lebensmittelhandel Europa","basis":"Anteil am Umsatz","size":3200.0,"growth":3.0,"revenue":176.0,"players":[["Lidl",4.3,1],["Kaufland",1.2,1],["Aldi",3.4],["Rewe Group",2.9],["Edeka",2.7],["Tesco",2.6],["X5 Retail",2.6],["Carrefour",2.5],["E.Leclerc",2.0],["Auchan",1.5],["Ahold Delhaize",1.4],["Mercadona",1.2]]},{"name":"Abfallwirtschaft","basis":"Anteil am Umsatz","size":450.0,"growth":5.0,"revenue":6.3,"players":[["PreZero",1.4,1],["WM",5.0],["Veolia",3.5],["Republic Services",3.5],["Remondis",2.5],["Waste Connections",2.0],["Suez",1.8],["Clean Harbors",1.3],["Biffa",0.5],["Renewi",0.4]]},{"name":"Lebensmittelhandel USA","basis":"Anteil am Umsatz","size":1100.0,"growth":3.0,"revenue":4.5,"players":[["Lidl US",0.4,1],["Walmart",22.0],["Kroger",11.0],["Costco",8.0],["Albertsons",6.5],["Target",5.0],["Publix",4.5],["Ahold Delhaize USA",4.0],["Aldi",3.5],["H-E-B",3.0],["Amazon/Whole Foods",3.0]]},{"name":"Cloud-Infrastruktur","basis":"Anteil am Umsatz","size":400.0,"growth":22.0,"revenue":1.6,"players":[["STACKIT",0.4,1],["AWS",30.0],["Microsoft Azure",22.0],["Google Cloud",12.0],["Alibaba Cloud",4.0],["Oracle",3.0],["IBM",2.0],["Huawei Cloud",2.0],["Tencent Cloud",2.0],["CoreWeave",1.0]]}]},{"id":"db-toyota","name":"Toyota Motor Corporation","hq":"Toyota, JP","revenue":315,"year":2025,"aliases":["toyota","toyota motor","lexus","daihatsu","hino","gr","gazoo racing","toyota financial services","woven by toyota","prius","corolla"],"markets":[{"name":"Volumen-Pkw","basis":"Anteil am Umsatz","size":2000.0,"growth":2.0,"revenue":230.0,"players":[["Toyota",11.5,1],["Daihatsu",0.6,1],["Volkswagen",7.5],["Stellantis",7.0],["General Motors",6.5],["Honda",5.0],["Ford",5.0],["Hyundai",4.3],["Nissan",4.0],["Kia",3.5],["Renault",2.8],["Suzuki",2.5]]},{"name":"Premium-Pkw","basis":"Anteil am Umsatz","size":600.0,"growth":3.0,"revenue":38.0,"players":[["Lexus",6.3,1],["Mercedes-Benz",18.0],["BMW",18.0],["Tesla",11.0],["Audi",10.0],["Porsche",6.0],["Volvo Cars",5.0],["Land Rover",4.0],["Cadillac",3.0],["Genesis",2.0]]},{"name":"Elektroautos","basis":"Anteil am Umsatz (BEV und PHEV)","size":700.0,"growth":20.0,"revenue":7.7,"players":[["Toyota bZ",1.1,1],["BYD",12.2],["Tesla",10.0],["Geely",5.7],["Volkswagen",5.0],["BMW",3.0],["Hyundai Motor Group",2.5],["Li Auto",2.5],["Mercedes-Benz",2.5],["Changan",2.5],["Xiaomi",2.0]]},{"name":"Lkw & Busse","basis":"Anteil am Umsatz","size":300.0,"growth":1.0,"revenue":10.0,"players":[["Hino",3.3,1],["Daimler Truck",18.0],["Volvo Group",16.0],["Traton",15.0],["PACCAR",11.0],["Isuzu",6.0],["Sinotruk",4.0],["Tata Motors",3.0],["Hyundai",1.2],["BYD",0.5]]},{"name":"Autofinanzierung","basis":"Anteil am Umsatz der Autofinanzierer","size":250.0,"growth":4.0,"revenue":27.0,"players":[["Toyota Financial Services",10.8,1],["BMW Financial Services",14.0],["Volkswagen Financial Services",12.0],["Mercedes-Benz Mobility",10.0],["GM Financial",6.0],["Ford Credit",5.0],["Ally Financial",5.0],["Hyundai Capital",4.0],["Honda Finance",4.0],["Santander Consumer",3.0]]}]},{"id":"db-samsung","name":"Samsung Electronics Co., Ltd.","hq":"Suwon, KR","revenue":235,"year":2025,"aliases":["samsung","samsung electronics","galaxy","samsung display","samsung foundry","exynos","harman","jbl","bespoke","neo qled"],"markets":[{"name":"Smartphones","basis":"Anteil am Umsatz","size":480.0,"growth":3.0,"revenue":78.0,"players":[["Samsung Galaxy",16.3,1],["Apple",44.0],["Xiaomi",5.6],["Huawei",5.0],["Oppo",5.0],["Vivo",5.0],["Honor",3.5],["Transsion",2.5],["Google Pixel",1.5],["Motorola",1.5]]},{"name":"Speicherchips","basis":"Anteil am Umsatz (DRAM, NAND, HBM)","size":220.0,"growth":12.0,"revenue":70.0,"players":[["Samsung Memory",31.8,1],["SK Hynix",29.0],["Micron",19.0],["Kioxia",6.0],["SanDisk",5.0],["CXMT",3.0],["YMTC",2.5],["Nanya",1.5]]},{"name":"Fernseher","basis":"Anteil am Umsatz","size":100.0,"growth":1.0,"revenue":27.0,"players":[["Samsung TV",27.0,1],["LG Electronics",16.0],["TCL",9.0],["Hisense",9.0],["Sony",5.0],["Xiaomi",3.0],["Skyworth",2.5],["Panasonic",2.0],["TP Vision (Philips)",1.5],["Vizio",1.5]]},{"name":"Display-Panels","basis":"Anteil am Umsatz","size":140.0,"growth":3.0,"revenue":22.0,"players":[["Samsung Display",15.7,1],["BOE",18.0],["LG Display",14.0],["TCL CSOT",10.0],["AUO",5.0],["Innolux",4.0],["HKC",3.0],["Sharp",3.0],["Tianma",3.0],["Visionox",1.5]]},{"name":"Haushaltsgroßgeräte","basis":"Anteil am Umsatz","size":300.0,"growth":4.0,"revenue":20.0,"players":[["Samsung Bespoke",6.7,1],["Haier",13.0],["Midea",12.0],["LG Electronics",9.0],["Whirlpool",6.0],["BSH",6.0],["Gree",6.0],["Electrolux",4.0],["Panasonic",3.0],["Arçelik",2.5]]},{"name":"Tablets","basis":"Anteil am Umsatz","size":60.0,"growth":4.0,"revenue":7.0,"players":[["Samsung Galaxy Tab",11.7,1],["Apple",50.0],["Huawei",7.0],["Lenovo",7.0],["Xiaomi",4.2],["Amazon",3.0],["Microsoft",3.0],["Honor",2.0]]},{"name":"Chip-Auftragsfertigung","basis":"Anteil am Umsatz","size":170.0,"growth":12.0,"revenue":12.0,"players":[["Samsung Foundry",7.0,1],["TSMC",67.0],["SMIC",5.5],["UMC",4.5],["GlobalFoundries",4.0],["Hua Hong",2.0],["Intel Foundry",1.0],["VIS",1.0],["Tower Semiconductor",0.8]]}]},{"id":"db-sony","name":"Sony Group Corporation","hq":"Tokio, JP","revenue":82,"year":2025,"aliases":["sony","sony group","playstation","ps5","sony music","sony pictures","columbia pictures","crunchyroll","bravia","sony alpha","sony semiconductor","aniplex"],"markets":[{"name":"Videospiele","basis":"Anteil am Umsatz mit Spielen und Diensten","size":190.0,"growth":3.0,"revenue":22.0,"players":[["PlayStation (Software & Dienste)",11.6,1],["Tencent",16.3],["Microsoft",11.0],["NetEase",6.0],["Electronic Arts",3.9],["Take-Two",3.3],["miHoYo",2.5],["Nintendo",2.4],["Roblox",2.0],["Bandai Namco",1.5],["Krafton",1.2]]},{"name":"Spielkonsolen","basis":"Anteil am Hardware-Umsatz","size":24.0,"growth":2.0,"revenue":7.0,"players":[["PlayStation 5",29.0,1],["Nintendo Switch 2",26.3],["Nintendo Switch",5.0],["Xbox",10.4],["Meta Quest",10.4],["Valve Steam Deck",4.2],["Asus ROG Ally",2.5],["Apple Vision Pro",2.0],["Lenovo Legion Go",1.5]]},{"name":"Bildsensoren","basis":"Anteil am Umsatz (CMOS-Sensoren)","size":23.0,"growth":6.0,"revenue":11.0,"players":[["Sony Semiconductor",48.0,1],["Samsung",15.0],["OmniVision",11.0],["onsemi",5.0],["STMicroelectronics",4.0],["SmartSens",2.5],["GalaxyCore",2.0],["SK Hynix",1.5]]},{"name":"Tonträger & Musikrechte","basis":"Anteil am Umsatz (Aufnahmen und Verlag)","size":45.0,"growth":6.0,"revenue":11.0,"players":[["Sony Music",24.4,1],["Universal Music Group",26.0],["Warner Music Group",14.0],["BMG",2.0],["Believe",2.0],["Kobalt",1.5],["Hybe",1.5],["Concord",1.0]]},{"name":"Film & TV-Produktion","basis":"Anteil am Umsatz (Kino, Lizenzen, Produktion)","size":200.0,"growth":3.0,"revenue":9.5,"players":[["Sony Pictures",4.8,1],["Walt Disney",15.0],["Warner Bros. Discovery",10.0],["Comcast NBCUniversal",10.0],["Paramount",6.0],["Amazon MGM Studios",3.0],["Lionsgate",2.0],["Banijay",2.0],["Fremantle",1.5],["Toho",1.0]]},{"name":"Fernseher","basis":"Anteil am Umsatz","size":100.0,"growth":1.0,"revenue":5.0,"players":[["Sony Bravia",5.0,1],["Samsung",27.0],["LG Electronics",16.0],["TCL",9.0],["Hisense",9.0],["Xiaomi",3.0],["Skyworth",2.5],["Panasonic",2.0],["TP Vision (Philips)",1.5],["Vizio",1.5]]},{"name":"Kameras & Objektive","basis":"Anteil am Umsatz","size":18.0,"growth":3.0,"revenue":4.5,"players":[["Sony Alpha",25.0,1],["Canon",30.0],["Nikon",9.0],["Fujifilm",9.0],["DJI",6.0],["GoPro",4.0],["Panasonic",3.0],["Leica",2.0],["OM System",1.5]]}]},{"id":"db-nintendo","name":"Nintendo Co., Ltd.","hq":"Kyoto, JP","revenue":13,"year":2025,"aliases":["nintendo","nintendo switch","switch","switch 2","nintendo switch 2","super mario","mario","zelda","donkey kong","amiibo","nintendo eshop"],"markets":[{"name":"Spielkonsolen","basis":"Anteil am Hardware-Umsatz","size":24.0,"growth":2.0,"revenue":7.5,"players":[["Nintendo Switch 2",26.3,1],["Nintendo Switch",5.0,1],["PlayStation 5",29.0],["Xbox",10.4],["Meta Quest",10.4],["Valve Steam Deck",4.2],["Asus ROG Ally",2.5],["Apple Vision Pro",2.0],["Lenovo Legion Go",1.5]]},{"name":"Videospiele","basis":"Anteil am Umsatz mit Spielen und Diensten","size":190.0,"growth":3.0,"revenue":4.6,"players":[["Nintendo (Software & Online)",2.4,1],["Tencent",16.3],["Sony PlayStation",11.6],["Microsoft",11.0],["NetEase",6.0],["Electronic Arts",3.9],["Take-Two",3.3],["miHoYo",2.5],["Roblox",2.0],["Bandai Namco",1.5],["Krafton",1.2]]},{"name":"Gaming-Zubehör","basis":"Anteil am Umsatz","size":14.0,"growth":4.0,"revenue":0.7,"players":[["Nintendo Zubehör & amiibo",5.0,1],["Logitech G",12.0],["Razer",9.0],["Corsair",8.0],["Sony",8.0],["Microsoft",6.0],["HyperX",4.0],["Turtle Beach",3.0],["SteelSeries",3.0]]},{"name":"Charakterlizenzen","basis":"Anteil an Lizenzerlösen der Rechteinhaber","size":30.0,"growth":4.0,"revenue":0.5,"players":[["Nintendo IP (Mario, Zelda)",1.7,1],["Walt Disney",20.0],["Warner Bros. Discovery",5.0],["NBCUniversal",4.0],["Paramount",3.0],["The Pokémon Company",3.0],["Hasbro",2.0],["Mattel",2.0],["Sanrio",1.5],["Toei Animation",1.0]]}]},{"id":"db-hyundai","name":"Hyundai Motor Group","hq":"Seoul, KR","revenue":240,"year":2025,"aliases":["hyundai","hyundai motor","kia","genesis","ioniq","hyundai mobis","hyundai steel","hyundai capital","hyundai glovis","hyundai rotem","hyundai wia","boston dynamics"],"markets":[{"name":"Volumen-Pkw","basis":"Anteil am Umsatz","size":2000.0,"growth":2.0,"revenue":156.0,"players":[["Hyundai",4.3,1],["Kia",3.5,1],["Toyota",11.5],["Volkswagen",7.5],["Stellantis",7.0],["General Motors",6.5],["Honda",5.0],["Ford",5.0],["Nissan",4.0],["Renault",2.8],["Suzuki",2.5]]},{"name":"Premium-Pkw","basis":"Anteil am Umsatz","size":600.0,"growth":3.0,"revenue":12.0,"players":[["Genesis",2.0,1],["Mercedes-Benz",18.0],["BMW",18.0],["Tesla",11.0],["Audi",10.0],["Lexus",6.3],["Porsche",6.0],["Volvo Cars",5.0],["Land Rover",4.0],["Cadillac",3.0]]},{"name":"Elektroautos","basis":"Anteil am Umsatz (BEV und PHEV)","size":700.0,"growth":20.0,"revenue":17.5,"players":[["Hyundai Ioniq",1.4,1],["Kia EV",1.1,1],["BYD",12.2],["Tesla",10.0],["Geely",5.7],["Volkswagen",5.0],["BMW",3.0],["Li Auto",2.5],["Mercedes-Benz",2.5],["Changan",2.5],["Xiaomi",2.0],["Toyota",1.1]]},{"name":"Autozulieferteile","basis":"Anteil am Umsatz (externe Zulieferumsätze)","size":1100.0,"growth":3.0,"revenue":12.0,"players":[["Hyundai Mobis",1.1,1],["Bosch",5.5],["CATL",4.5],["Denso",4.4],["ZF",4.0],["Magna",3.9],["Aisin",3.0],["Forvia",2.5],["Lear",2.1],["Continental",2.0],["Valeo",2.0]]},{"name":"Stahl","basis":"Anteil am Umsatz","size":1400.0,"growth":1.0,"revenue":15.4,"players":[["Hyundai Steel",1.1,1],["China Baowu",7.0],["ArcelorMittal",4.5],["Nippon Steel",4.5],["POSCO",3.5],["Ansteel",2.5],["HBIS",2.5],["JFE",2.5],["Nucor",2.2],["Tata Steel",2.0],["Shagang",2.0]]},{"name":"Lkw & Busse","basis":"Anteil am Umsatz","size":300.0,"growth":1.0,"revenue":3.6,"players":[["Hyundai Commercial Vehicles",1.2,1],["Daimler Truck",18.0],["Volvo Group",16.0],["Traton",15.0],["PACCAR",11.0],["Isuzu",6.0],["Sinotruk",4.0],["Hino",3.3],["Tata Motors",3.0]]},{"name":"Autofinanzierung","basis":"Anteil am Umsatz der Autofinanzierer","size":250.0,"growth":4.0,"revenue":10.0,"players":[["Hyundai Capital",4.0,1],["BMW Financial Services",14.0],["Volkswagen Financial Services",12.0],["Toyota Financial Services",10.8],["Mercedes-Benz Mobility",10.0],["GM Financial",6.0],["Ford Credit",5.0],["Ally Financial",5.0],["Honda Finance",4.0]]}]},{"id":"db-tencent","name":"Tencent Holdings Ltd.","hq":"Shenzhen, CN","revenue":104,"year":2025,"aliases":["tencent","wechat","weixin","qq","tencent games","riot games","supercell","honor of kings","tencent music","qq music","kugou","tencent cloud","tencent video","wechat pay","tenpay"],"markets":[{"name":"Videospiele","basis":"Anteil am Umsatz mit Spielen und Diensten","size":190.0,"growth":3.0,"revenue":31.0,"players":[["Tencent Games China",11.8,1],["Tencent Games International (Riot, Super",4.5,1],["Sony PlayStation",11.6],["Microsoft",11.0],["NetEase",6.0],["Electronic Arts",3.9],["Take-Two",3.3],["miHoYo",2.5],["Nintendo",2.4],["Roblox",2.0],["Bandai Namco",1.5]]},{"name":"Digitale Zahlungsdienste","basis":"Anteil am Umsatz der Zahlungsanbieter","size":300.0,"growth":9.0,"revenue":22.0,"players":[["WeChat Pay (Tenpay)",7.3,1],["PayPal",10.5],["Ant Group (Alipay)",10.0],["Block",8.0],["Fiserv",6.0],["Global Payments",3.0],["Stripe",2.0],["Worldpay",1.5],["Adyen",0.9]]},{"name":"Social-Media-Werbung","basis":"Anteil am Werbeumsatz","size":270.0,"growth":10.0,"revenue":16.2,"players":[["WeChat & QQ Werbung",6.0,1],["Meta",46.0],["Douyin",23.0],["TikTok",8.0],["Kuaishou",3.5],["LinkedIn",2.0],["Snap",1.8],["Pinterest",1.5],["Xiaohongshu",1.5],["Reddit",0.7]]},{"name":"Messenger","basis":"Anteil am Umsatz (Nutzer- und Business-Messaging)","size":70.0,"growth":7.0,"revenue":9.5,"players":[["WeChat & QQ",13.6,1],["Meta (WhatsApp, Messenger)",12.0],["Twilio",7.0],["LINE (LY Corp)",4.0],["Sinch",3.5],["Kakao",3.0],["Telegram",2.0],["Discord",1.0],["Viber",1.0]]},{"name":"Cloud-Infrastruktur","basis":"Anteil am Umsatz","size":400.0,"growth":22.0,"revenue":6.0,"players":[["Tencent Cloud",1.5,1],["Amazon Web Services",28.7],["Microsoft Azure",21.0],["Google Cloud",12.0],["Alibaba Cloud",4.2],["Oracle",3.0],["Huawei Cloud",2.0],["IBM",1.5],["CoreWeave",1.2],["Volcano Engine",0.8]]},{"name":"Musik-Streaming","basis":"Anteil am Umsatz","size":32.0,"growth":10.0,"revenue":4.3,"players":[["Tencent Music (QQ Music, Kugou)",13.4,1],["Spotify",46.0],["Apple Music",13.0],["Amazon Music",8.0],["YouTube Music",8.0],["NetEase Cloud Music",3.0],["Deezer",1.5],["Yandex Music",1.5],["Melon",1.0],["SoundCloud",0.6]]},{"name":"Video-Streaming-Abos","basis":"Anteil am Abo-Umsatz","size":140.0,"growth":7.0,"revenue":4.0,"players":[["Tencent Video",2.9,1],["Netflix",30.0],["Disney+ & Hulu",16.0],["Amazon Prime Video",10.0],["Max",7.0],["YouTube Premium & TV",7.0],["Paramount+",5.0],["Peacock",3.0],["Apple TV+",2.0],["iQIYI",2.0],["Youku",1.1]]}]},{"id":"db-alibaba","name":"Alibaba Group Holding Ltd.","hq":"Hangzhou, CN","revenue":138,"year":2025,"aliases":["alibaba","taobao","tmall","aliexpress","lazada","trendyol","alibaba cloud","aliyun","qwen","cainiao","ele.me","taobao instant commerce","youku","1688","freshippo","hema","alimama"],"markets":[{"name":"Retail Media","basis":"Anteil am Werbeumsatz","size":180.0,"growth":14.0,"revenue":39.6,"players":[["Taobao & Tmall (Alimama)",22.0,1],["Amazon Ads",33.0],["Douyin E-Commerce",15.0],["PDD (Pinduoduo, Temu)",13.0],["JD.com",4.5],["Walmart Connect",2.5],["Kuaishou",2.0],["Shopee",1.5],["Mercado Ads",1.0],["Coupang",0.6]]},{"name":"Online-Marktplätze","basis":"Anteil am Umsatz (Provisionen, Services, Direktverkauf)","size":350.0,"growth":8.0,"revenue":31.2,"players":[["Taobao & Tmall",3.4,1],["AliExpress",2.9,1],["Trendyol",1.7,1],["Lazada",0.9,1],["Amazon",46.0],["PDD (Pinduoduo, Temu)",8.6],["Mercado Libre",5.0],["Shopee",4.0],["eBay",3.0],["JD.com",3.0],["Douyin E-Commerce",3.0],["Coupang",1.5],["TikTok Shop",1.0],["Etsy",0.8]]},{"name":"Cloud-Infrastruktur","basis":"Anteil am Umsatz","size":400.0,"growth":22.0,"revenue":16.8,"players":[["Alibaba Cloud",4.2,1],["Amazon Web Services",28.7],["Microsoft Azure",21.0],["Google Cloud",12.0],["Oracle",3.0],["Huawei Cloud",2.0],["Tencent Cloud",1.5],["IBM",1.5],["CoreWeave",1.2],["Volcano Engine",0.8]]},{"name":"Paket-Logistik","basis":"Anteil am Umsatz","size":500.0,"growth":5.0,"revenue":14.0,"players":[["Cainiao",2.8,1],["UPS",18.0],["FedEx",17.0],["DHL",10.0],["SF Express",8.0],["Amazon Logistics",6.0],["JD Logistics",5.6],["YTO Express",1.3],["ZTO Express",1.2]]},{"name":"Essenslieferung","basis":"Anteil am Plattformumsatz","size":160.0,"growth":8.0,"revenue":6.1,"players":[["Ele.me & Taobao Instant Commerce",3.8,1],["Meituan",18.0],["Uber Eats",9.0],["DoorDash",8.0],["Delivery Hero",7.0],["Just Eat Takeaway",2.5],["Zomato",1.5],["Swiggy",1.0],["Grab",1.0],["iFood",1.0]]},{"name":"Video-Streaming-Abos","basis":"Anteil am Abo-Umsatz","size":140.0,"growth":7.0,"revenue":1.5,"players":[["Youku",1.1,1],["Netflix",30.0],["Disney+ & Hulu",16.0],["Amazon Prime Video",10.0],["Max",7.0],["YouTube Premium & TV",7.0],["Paramount+",5.0],["Peacock",3.0],["Tencent Video",2.9],["iQIYI",2.0],["Apple TV+",2.0]]}]},{"id":"db-bytedance","name":"ByteDance Ltd.","hq":"Peking, CN","revenue":190,"year":2025,"aliases":["bytedance","tiktok","douyin","tiktok shop","capcut","jianying","toutiao","lark","feishu","volcano engine","pangle","xigua","doubao","lemon8"],"markets":[{"name":"Social-Media-Werbung","basis":"Anteil am Werbeumsatz","size":270.0,"growth":10.0,"revenue":83.7,"players":[["Douyin",23.0,1],["TikTok",8.0,1],["Meta",46.0],["Tencent",6.0],["Kuaishou",3.5],["LinkedIn",2.0],["Snap",1.8],["Pinterest",1.5],["Xiaohongshu",1.5],["Reddit",0.7],["X",0.7]]},{"name":"Retail Media","basis":"Anteil am Werbeumsatz","size":180.0,"growth":14.0,"revenue":27.0,"players":[["Douyin E-Commerce (Qianchuan)",15.0,1],["Amazon Ads",33.0],["Taobao & Tmall (Alimama)",22.0],["PDD (Pinduoduo, Temu)",13.0],["JD.com",4.5],["Walmart Connect",2.5],["Kuaishou",2.0],["Shopee",1.5],["Mercado Ads",1.0],["Coupang",0.6]]},{"name":"Live-Streaming","basis":"Anteil am Umsatz (virtuelle Geschenke, Abos)","size":60.0,"growth":6.0,"revenue":17.8,"players":[["Douyin Live",23.0,1],["TikTok LIVE",6.7,1],["Kuaishou",9.0],["Tencent",4.0],["Twitch",3.3],["BIGO Live",3.3],["Bilibili",2.0],["YouTube",1.7],["DouYu",1.5],["Huya",1.3]]},{"name":"Online-Marktplätze","basis":"Anteil am Umsatz (Provisionen, Services, Direktverkauf)","size":350.0,"growth":8.0,"revenue":14.0,"players":[["Douyin E-Commerce",3.0,1],["TikTok Shop",1.0,1],["Amazon",46.0],["PDD (Pinduoduo, Temu)",8.6],["Mercado Libre",5.0],["Shopee",4.0],["Taobao & Tmall",3.4],["eBay",3.0],["JD.com",3.0],["AliExpress",2.9],["Trendyol",1.7],["Coupang",1.5]]},{"name":"Online-Videowerbung","basis":"Anteil am Werbeumsatz","size":190.0,"growth":11.0,"revenue":5.7,"players":[["Pangle & Xigua Video",3.0,1],["YouTube",21.0],["Disney (Hulu, Disney+)",2.5],["Amazon Prime Video",2.0],["Roku",1.5],["Tencent Video",1.5],["Netflix",1.2],["iQIYI",1.0],["Bilibili",0.7]]},{"name":"Cloud-Infrastruktur","basis":"Anteil am Umsatz","size":400.0,"growth":22.0,"revenue":3.2,"players":[["Volcano Engine",0.8,1],["Amazon Web Services",28.7],["Microsoft Azure",21.0],["Google Cloud",12.0],["Alibaba Cloud",4.2],["Oracle",3.0],["Huawei Cloud",2.0],["Tencent Cloud",1.5],["IBM",1.5],["CoreWeave",1.2]]}]},{"id":"db-xiaomi","name":"Xiaomi Corporation","hq":"Peking, CN","revenue":65,"year":2025,"aliases":["xiaomi","mi","redmi","poco","xiaomi su7","xiaomi yu7","hyperos","miui","mijia","xiaomi ev"],"markets":[{"name":"Smartphones","basis":"Anteil am Umsatz","size":480.0,"growth":3.0,"revenue":27.0,"players":[["Xiaomi & Redmi & POCO",5.6,1],["Apple",44.0],["Samsung",16.3],["Huawei",5.0],["Oppo",5.0],["Vivo",5.0],["Honor",3.5],["Transsion",2.5],["Google Pixel",1.5],["Motorola",1.5]]},{"name":"Elektroautos","basis":"Anteil am Umsatz (BEV und PHEV)","size":700.0,"growth":20.0,"revenue":14.0,"players":[["Xiaomi SU7/YU7",2.0,1],["BYD",12.2],["Tesla",10.0],["Geely",5.7],["Volkswagen",5.0],["BMW",3.0],["Hyundai Motor Group",2.5],["Li Auto",2.5],["Mercedes-Benz",2.5],["Changan",2.5],["Leapmotor",1.5]]},{"name":"Haushaltsgroßgeräte","basis":"Anteil am Umsatz","size":300.0,"growth":4.0,"revenue":5.0,"players":[["Xiaomi Mijia",1.7,1],["Haier",13.0],["Midea",12.0],["LG Electronics",9.0],["Samsung",6.7],["Whirlpool",6.0],["BSH",6.0],["Gree",6.0],["Electrolux",4.0],["Panasonic",3.0]]},{"name":"Fernseher","basis":"Anteil am Umsatz","size":100.0,"growth":1.0,"revenue":3.0,"players":[["Xiaomi TV",3.0,1],["Samsung",27.0],["LG Electronics",16.0],["TCL",9.0],["Hisense",9.0],["Sony",5.0],["Skyworth",2.5],["Panasonic",2.0],["TP Vision (Philips)",1.5],["Vizio",1.5]]},{"name":"Tablets","basis":"Anteil am Umsatz","size":60.0,"growth":4.0,"revenue":2.5,"players":[["Xiaomi Pad & Redmi Pad",4.2,1],["Apple",50.0],["Samsung",11.7],["Huawei",7.0],["Lenovo",7.0],["Amazon",3.0],["Microsoft",3.0],["Honor",2.0]]},{"name":"Smartwatches","basis":"Anteil am Umsatz","size":45.0,"growth":5.0,"revenue":1.8,"players":[["Xiaomi Watch & Smart Band",4.0,1],["Apple",40.0],["Garmin",9.0],["Samsung",7.0],["Huawei",7.0],["Google (Pixel, Fitbit)",3.0],["Imoo",2.0],["Amazfit (Zepp)",0.6],["Fossil",0.5]]},{"name":"Kabellose Kopfhörer","basis":"Anteil am Umsatz","size":60.0,"growth":6.0,"revenue":1.5,"players":[["Xiaomi Buds & Redmi Buds",2.5,1],["Apple AirPods",33.0],["Samsung Galaxy Buds",5.0],["Sony",4.2],["JBL",4.0],["Bose",4.0],["Beats",3.0],["Huawei",2.5],["Anker Soundcore",2.0],["Sennheiser",1.5]]}]},{"id":"db-byd","name":"BYD Company Ltd.","hq":"Shenzhen, CN","revenue":115,"year":2025,"aliases":["byd","build your dreams","denza","fangchengbao","yangwang","byd electronic","findreams","blade battery","seal","dolphin","atto 3"],"markets":[{"name":"Elektroautos","basis":"Anteil am Umsatz (BEV und PHEV)","size":700.0,"growth":20.0,"revenue":85.4,"players":[["BYD (Dynasty & Ocean)",11.0,1],["Denza",0.6,1],["Fangchengbao",0.5,1],["Yangwang",0.1,1],["Tesla",10.0],["Geely",5.7],["Volkswagen",5.0],["BMW",3.0],["Hyundai Motor Group",2.5],["Li Auto",2.5],["Mercedes-Benz",2.5],["Changan",2.5],["Xiaomi",2.0],["Leapmotor",1.5]]},{"name":"Elektronik-Auftragsfertigung","basis":"Anteil am Umsatz","size":600.0,"growth":5.0,"revenue":25.0,"players":[["BYD Electronic",4.2,1],["Foxconn",38.0],["Quanta",7.5],["Luxshare",6.0],["Jabil",4.6],["Flex",4.3],["Wistron",4.0],["Pegatron",3.5]]},{"name":"Energiespeicher","basis":"Anteil am Umsatz (stationäre Batteriespeicher)","size":60.0,"growth":20.0,"revenue":5.0,"players":[["BYD Energy Storage",8.3,1],["CATL",30.0],["Tesla Energy",17.0],["Sungrow",9.0],["EVE Energy",4.0],["Hithium",4.0],["Fluence",4.0],["LG Energy Solution",3.0],["CALB",2.0],["Samsung SDI",2.0]]},{"name":"Lkw & Busse","basis":"Anteil am Umsatz","size":300.0,"growth":1.0,"revenue":1.5,"players":[["BYD Busse & Nutzfahrzeuge",0.5,1],["Daimler Truck",18.0],["Volvo Group",16.0],["Traton",15.0],["PACCAR",11.0],["Isuzu",6.0],["Sinotruk",4.0],["Hino",3.3],["Tata Motors",3.0],["Yutong",1.5]]}]},{"id":"db-tesla","name":"Tesla, Inc.","hq":"Austin, USA","revenue":95,"year":2025,"aliases":["tesla","tesla motors","model 3","model y","model s","model x","cybertruck","tesla energy","powerwall","megapack","supercharger","solarcity"],"markets":[{"name":"Elektroautos","basis":"Anteil am Umsatz","size":700.0,"growth":20.0,"revenue":80.0,"players":[["Tesla Fahrzeuge",11.4,1],["BYD",20.0],["Geely",9.0],["Volkswagen",6.5],["SAIC",5.0],["BMW",4.5],["Hyundai-Kia",4.0],["Mercedes-Benz",3.5],["Li Auto",3.5],["Stellantis",3.0],["Xiaomi",2.5]]},{"name":"Energiespeicher","basis":"Anteil am Umsatz stationärer Speichersysteme","size":60.0,"growth":25.0,"revenue":12.0,"players":[["Tesla Megapack/Powerwall",20.0,1],["Sungrow",12.0],["BYD",10.0],["CATL",8.0],["Fluence",8.0],["LG Energy Solution",5.0],["Huawei",5.0],["Wärtsilä",4.0],["Hithium",4.0],["Samsung SDI",3.0]]},{"name":"Ladeinfrastruktur","basis":"Anteil am Umsatz (Hardware und Ladeerlöse)","size":40.0,"growth":25.0,"revenue":3.0,"players":[["Tesla Supercharger",7.5,1],["TELD",9.0],["State Grid",8.0],["Star Charge",7.0],["ABB E-mobility",6.0],["ChargePoint",4.0],["Siemens",3.0],["Shell Recharge",3.0],["Electrify America",2.5],["Ionity",2.0],["Wallbox",2.0]]}]},{"id":"db-nvidia","name":"NVIDIA Corporation","hq":"Santa Clara, USA","revenue":130,"year":2025,"aliases":["nvidia","geforce","rtx","quadro","cuda","mellanox","infiniband","spectrum-x","nvidia drive","dgx","hopper","blackwell","grace","jetson","shield"],"markets":[{"name":"KI-Beschleuniger","basis":"Anteil am Umsatz mit Rechenzentrums-Beschleunigern","size":130.0,"growth":30.0,"revenue":100.0,"players":[["NVIDIA Data Center GPUs",77.0,1],["Broadcom (Custom-ASICs)",7.0],["AMD Instinct",5.0],["Huawei Ascend",3.0],["Marvell",2.5],["Intel Gaudi",1.5],["AWS Trainium",1.5],["Cambricon",0.7]]},{"name":"Rechenzentrums-Netzwerk","basis":"Anteil am Umsatz mit RZ-Switching und Interconnect","size":45.0,"growth":15.0,"revenue":13.0,"players":[["NVIDIA Networking",29.0,1],["Cisco",20.0],["Arista",17.0],["Huawei",9.0],["HPE Juniper",6.0],["H3C",5.0],["Celestica",3.0],["Dell",2.0]]},{"name":"PC-Grafikchips","basis":"Anteil am Umsatz mit diskreten GPUs","size":17.0,"growth":8.0,"revenue":13.3,"players":[["NVIDIA GeForce/RTX",78.0,1],["AMD Radeon",15.0],["Intel Arc",3.0],["Moore Threads",0.5],["Qualcomm",0.5]]},{"name":"ADAS-Chips","basis":"Anteil am Umsatz mit Fahrerassistenz- und Autonomie-SoCs","size":15.0,"growth":20.0,"revenue":1.7,"players":[["NVIDIA Drive",11.0,1],["Mobileye",12.0],["Tesla (Eigenentwicklung)",10.0],["Qualcomm",9.0],["NXP",9.0],["Huawei",8.0],["Renesas",8.0],["Horizon Robotics",5.0],["Texas Instruments",5.0],["Infineon",4.0],["Black Sesame",1.0]]}]},{"id":"db-intel","name":"Intel Corporation","hq":"Santa Clara, USA","revenue":53,"year":2025,"aliases":["intel","intel core","core ultra","xeon","intel foundry","mobileye","altera","gaudi","intel arc","pentium","celeron"],"markets":[{"name":"PC-Prozessoren","basis":"Anteil am Umsatz mit Client-CPUs","size":45.0,"growth":4.0,"revenue":29.5,"players":[["Intel Core",65.0,1],["AMD Ryzen",22.0],["Apple M-Serie",7.0],["Qualcomm Snapdragon X",2.0],["MediaTek",1.5],["NVIDIA",0.5],["Loongson",0.3],["Zhaoxin",0.2]]},{"name":"Server-Prozessoren","basis":"Anteil am Umsatz mit Server-CPUs","size":35.0,"growth":12.0,"revenue":15.5,"players":[["Intel Xeon",44.0,1],["AMD EPYC",33.0],["AWS Graviton",6.0],["NVIDIA Grace",4.0],["Huawei Kunpeng",2.0],["Hygon",2.0],["Google Axion",1.5],["Ampere",1.0],["Microsoft Cobalt",1.0]]},{"name":"Netzwerk- & Edge-Chips","basis":"Anteil am Umsatz mit Netzwerk- und Edge-Halbleitern","size":60.0,"growth":8.0,"revenue":5.4,"players":[["Intel NEX",9.0,1],["Broadcom",25.0],["NVIDIA",10.0],["Marvell",8.0],["Qualcomm",6.0],["NXP",6.0],["AMD (Xilinx)",5.0],["MediaTek",4.0],["Cisco Silicon One",3.0]]},{"name":"ADAS-Chips","basis":"Anteil am Umsatz mit Fahrerassistenz- und Autonomie-SoCs","size":15.0,"growth":20.0,"revenue":1.8,"players":[["Mobileye",12.0,1],["NVIDIA Drive",11.0],["Tesla (Eigenentwicklung)",10.0],["Qualcomm",9.0],["NXP",9.0],["Huawei",8.0],["Renesas",8.0],["Horizon Robotics",5.0],["Texas Instruments",5.0],["Infineon",4.0],["Black Sesame",1.0]]},{"name":"FPGA","basis":"Anteil am Umsatz mit programmierbaren Logikbausteinen","size":7.0,"growth":8.0,"revenue":1.3,"players":[["Altera",18.0,1],["AMD (Xilinx)",50.0],["Microchip",9.0],["Lattice",7.0],["Gowin",1.5],["Efinix",1.0],["Achronix",0.5],["QuickLogic",0.3]]},{"name":"Auftragsfertigung Halbleiter","basis":"Anteil am Foundry-Umsatz (extern)","size":170.0,"growth":12.0,"revenue":0.8,"players":[["Intel Foundry",0.5,1],["TSMC",67.0],["Samsung Foundry",8.0],["SMIC",6.0],["UMC",4.5],["GlobalFoundries",4.0],["Hua Hong",2.0],["Tower Semiconductor",0.9],["VIS",0.8],["PSMC",0.8]]}]},{"id":"db-amd","name":"Advanced Micro Devices, Inc.","hq":"Santa Clara, USA","revenue":34,"year":2025,"aliases":["amd","advanced micro devices","ryzen","epyc","radeon","instinct","xilinx","pensando","threadripper","zt systems"],"markets":[{"name":"Server-Prozessoren","basis":"Anteil am Umsatz mit Server-CPUs","size":35.0,"growth":12.0,"revenue":11.5,"players":[["AMD EPYC",33.0,1],["Intel Xeon",44.0],["AWS Graviton",6.0],["NVIDIA Grace",4.0],["Huawei Kunpeng",2.0],["Hygon",2.0],["Google Axion",1.5],["Ampere",1.0],["Microsoft Cobalt",1.0]]},{"name":"PC-Prozessoren","basis":"Anteil am Umsatz mit Client-CPUs","size":45.0,"growth":4.0,"revenue":9.9,"players":[["AMD Ryzen",22.0,1],["Intel Core",65.0],["Apple M-Serie",7.0],["Qualcomm Snapdragon X",2.0],["MediaTek",1.5],["NVIDIA",0.5],["Loongson",0.3],["Zhaoxin",0.2]]},{"name":"KI-Beschleuniger","basis":"Anteil am Umsatz mit Rechenzentrums-Beschleunigern","size":130.0,"growth":30.0,"revenue":6.5,"players":[["AMD Instinct",5.0,1],["NVIDIA Data Center GPUs",77.0],["Broadcom (Custom-ASICs)",7.0],["Huawei Ascend",3.0],["Marvell",2.5],["Intel Gaudi",1.5],["AWS Trainium",1.5],["Cambricon",0.7]]},{"name":"FPGA","basis":"Anteil am Umsatz mit programmierbaren Logikbausteinen","size":7.0,"growth":8.0,"revenue":3.5,"players":[["AMD Xilinx",50.0,1],["Altera",18.0],["Microchip",9.0],["Lattice",7.0],["Gowin",1.5],["Efinix",1.0],["Achronix",0.5],["QuickLogic",0.3]]},{"name":"PC-Grafikchips","basis":"Anteil am Umsatz mit diskreten GPUs","size":17.0,"growth":8.0,"revenue":2.5,"players":[["AMD Radeon",15.0,1],["NVIDIA GeForce/RTX",78.0],["Intel Arc",3.0],["Moore Threads",0.5],["Qualcomm",0.5]]}]},{"id":"db-netflix","name":"Netflix, Inc.","hq":"Los Gatos, USA","revenue":45,"year":2025,"aliases":["netflix","netflix games","netflix ads"],"markets":[{"name":"Video-Streaming-Abos","basis":"Anteil am Abo-Umsatz","size":140.0,"growth":7.0,"revenue":42.7,"players":[["Netflix",30.5,1],["Disney+",11.0],["Amazon Prime Video",9.0],["YouTube Premium/TV",8.0],["HBO Max",7.0],["Hulu",5.5],["Paramount+",5.0],["Tencent Video",3.5],["Peacock",3.0],["iQIYI",2.5],["Apple TV+",2.0]]},{"name":"Online-Videowerbung","basis":"Anteil am Werbeumsatz","size":190.0,"growth":11.0,"revenue":1.5,"players":[["Netflix Werbe-Abo",0.8,1],["Meta",24.0],["YouTube",20.0],["ByteDance (TikTok/Douyin)",18.0],["Kuaishou",5.0],["Tencent",4.0],["Amazon",2.5],["Disney",2.5],["Roku",1.5],["Snap",1.0],["Comcast (Peacock)",1.0]]},{"name":"Videospiele","basis":"Anteil am Umsatz","size":190.0,"growth":3.0,"revenue":0.2,"players":[["Netflix Games",0.1,1],["Tencent",17.0],["Sony PlayStation",15.0],["Microsoft Xbox",12.0],["Nintendo",7.0],["NetEase",6.0],["Electronic Arts",4.0],["Take-Two",3.0],["miHoYo",3.0],["Roblox",2.0],["Bandai Namco",2.0]]}]},{"id":"db-disney","name":"The Walt Disney Company","hq":"Burbank, USA","revenue":94,"year":2025,"aliases":["disney","walt disney","disney+","hulu","espn","espn+","abc","pixar","marvel","lucasfilm","star wars","20th century studios","national geographic","disneyland","walt disney world","disney cruise line","fx"],"markets":[{"name":"Freizeitparks & Resorts","basis":"Anteil am Umsatz","size":75.0,"growth":6.0,"revenue":31.0,"players":[["Disney Parks & Resorts",41.0,1],["Universal (Comcast)",12.0],["Oriental Land",5.5],["Six Flags",4.3],["Merlin Entertainments",3.3],["United Parks",2.3],["OCT Group",2.0],["Chimelong",1.3],["Fantawild",0.8],["Europa-Park",0.7]]},{"name":"Video-Streaming-Abos","basis":"Anteil am Abo-Umsatz","size":140.0,"growth":7.0,"revenue":25.6,"players":[["Disney+",11.0,1],["Hulu",5.5,1],["ESPN+",1.8,1],["Netflix",30.5],["Amazon Prime Video",9.0],["YouTube Premium/TV",8.0],["HBO Max",7.0],["Paramount+",5.0],["Tencent Video",3.5],["Peacock",3.0],["iQIYI",2.5]]},{"name":"TV-Sender","basis":"Anteil am Umsatz (Werbung und Einspeiseentgelte)","size":250.0,"growth":-3.0,"revenue":25.5,"players":[["ESPN",6.2,1],["ABC & Disney Channels",4.0,1],["Comcast (NBCU, Sky)",9.0],["Warner Bros. Discovery",7.0],["Paramount Skydance",7.0],["Fox Corporation",5.5],["RTL Group",2.5],["Nexstar",2.1],["BBC",2.0],["TelevisaUnivision",2.0],["ProSiebenSat.1",1.6]]},{"name":"Kinofilme","basis":"Anteil am weltweiten Box-Office-Umsatz","size":34.0,"growth":3.0,"revenue":7.5,"players":[["Walt Disney Studios",22.0,1],["Universal Pictures",18.0],["Warner Bros.",15.0],["Sony Pictures",9.0],["Paramount Pictures",7.0],["China Film/Wanda",5.0],["Lionsgate",3.0],["Amazon MGM",2.0],["Toho",2.0],["A24",1.0]]},{"name":"Markenlizenzierung","basis":"Anteil an Lizenzerlösen der Lizenzgeber","size":18.0,"growth":4.0,"revenue":4.5,"players":[["Disney Consumer Products",25.0,1],["The Pokémon Company",6.0],["Warner Bros. Discovery",5.0],["Universal (Comcast)",4.0],["Authentic Brands",4.0],["NFL",4.0],["Hasbro",3.0],["Sanrio",3.0],["Paramount",2.5],["Mattel",2.0]]}]},{"id":"db-oracle","name":"Oracle Corporation","hq":"Austin, USA","revenue":57,"year":2025,"aliases":["oracle","oracle database","oci","oracle cloud","mysql","netsuite","oracle fusion","java","cerner","oracle health","peoplesoft","jd edwards","exadata"],"markets":[{"name":"Datenbanken & Analytics","basis":"Anteil am Umsatz","size":120.0,"growth":15.0,"revenue":21.6,"players":[["Oracle Database",17.5,1],["MySQL",0.5,1],["Microsoft",19.0],["AWS",17.0],["Google",8.0],["SAP",4.0],["Snowflake",3.5],["Databricks",3.0],["IBM",3.0],["Salesforce (Tableau)",2.0],["MongoDB",1.8]]},{"name":"Cloud-Infrastruktur","basis":"Anteil am Umsatz","size":400.0,"growth":22.0,"revenue":10.0,"players":[["Oracle Cloud Infrastructure",2.5,1],["AWS",30.0],["Microsoft Azure",21.0],["Google Cloud",12.0],["Alibaba Cloud",4.0],["Huawei Cloud",2.0],["Tencent Cloud",2.0],["IBM",1.5],["CoreWeave",1.2],["Baidu AI Cloud",1.0]]},{"name":"ERP-Software","basis":"Anteil am Umsatz","size":60.0,"growth":10.0,"revenue":9.6,"players":[["Oracle Fusion/E-Business ERP",10.0,1],["NetSuite",6.0,1],["SAP",23.0],["Microsoft Dynamics",8.0],["Infor",5.0],["Sage",4.0],["Workday",3.0],["Epicor",2.0],["IFS",2.0],["Yonyou",2.0],["Unit4",1.0]]},{"name":"Klinik-Software","basis":"Anteil am Umsatz mit Krankenhaus-IT/EHR","size":35.0,"growth":7.0,"revenue":5.3,"players":[["Oracle Health",15.0,1],["Epic Systems",17.0],["athenahealth",4.0],["CompuGroup Medical",3.5],["Dedalus",3.0],["eClinicalWorks",2.0],["Altera Digital Health",2.0],["NextGen",2.0],["Meditech",1.6],["Veradigm",1.5]]},{"name":"HR-Software","basis":"Anteil am Umsatz","size":40.0,"growth":9.0,"revenue":2.8,"players":[["Oracle HCM",7.0,1],["Workday",14.0],["UKG",9.0],["ADP",8.0],["SAP SuccessFactors",6.0],["Paycom",4.5],["Dayforce",4.0],["Paylocity",4.0],["Paychex",3.0],["Cornerstone",2.0]]},{"name":"Server-Hardware","basis":"Anteil am Umsatz","size":140.0,"growth":8.0,"revenue":2.8,"players":[["Oracle Exadata/Server",2.0,1],["Dell",17.0],["HPE",12.0],["Supermicro",11.0],["Inspur",9.0],["Lenovo",7.0],["Huawei",4.0],["xFusion",3.0],["IBM",3.0],["Cisco",2.0]]}]},{"id":"db-salesforce","name":"Salesforce, Inc.","hq":"San Francisco, USA","revenue":38,"year":2025,"aliases":["salesforce","sales cloud","service cloud","marketing cloud","commerce cloud","agentforce","slack","tableau","mulesoft","heroku","data cloud"],"markets":[{"name":"CRM-Software","basis":"Anteil am Umsatz","size":90.0,"growth":12.0,"revenue":24.3,"players":[["Service Cloud",11.0,1],["Sales Cloud",10.0,1],["Marketing & Commerce Cloud",6.0,1],["Adobe Experience Cloud",6.0],["Microsoft Dynamics 365",5.5],["Oracle",4.5],["SAP",4.0],["HubSpot",3.0],["ServiceNow",3.0],["Zendesk",2.0],["Genesys",2.0],["Pegasystems",1.5],["Zoho",1.5]]},{"name":"Low-Code-Plattformen","basis":"Anteil am Umsatz","size":30.0,"growth":20.0,"revenue":4.5,"players":[["Salesforce Platform",15.0,1],["Microsoft Power Platform",18.0],["ServiceNow",12.0],["Pegasystems",3.0],["OutSystems",2.0],["Mendix (Siemens)",2.0],["Appian",2.0],["Zoho Creator",1.0],["Google AppSheet",1.0]]},{"name":"Datenbanken & Analytics","basis":"Anteil am Umsatz","size":120.0,"growth":15.0,"revenue":2.4,"players":[["Tableau",2.0,1],["Microsoft",19.0],["Oracle",18.0],["AWS",17.0],["Google",8.0],["SAP",4.0],["Snowflake",3.5],["Databricks",3.0],["IBM",3.0],["MongoDB",1.8]]},{"name":"Integrationsplattformen","basis":"Anteil am Umsatz","size":18.0,"growth":13.0,"revenue":2.3,"players":[["MuleSoft",13.0,1],["IBM",10.0],["Microsoft",9.0],["Informatica",8.0],["SAP",6.0],["Oracle",4.0],["TIBCO",4.0],["Boomi",3.0],["Software AG",3.0],["Workato",1.5]]},{"name":"Office-Software","basis":"Anteil am Umsatz","size":90.0,"growth":10.0,"revenue":2.0,"players":[["Slack",2.2,1],["Microsoft 365",60.0],["Google Workspace",13.0],["Zoom",5.0],["Atlassian",5.0],["Adobe Acrobat",3.5],["DocuSign",3.3],["Dropbox",2.8],["Box",1.2],["Kingsoft WPS",0.7],["Notion",0.5]]}]},{"id":"db-adobe","name":"Adobe Inc.","hq":"San Jose, USA","revenue":24,"year":2025,"aliases":["adobe","creative cloud","photoshop","illustrator","premiere pro","after effects","lightroom","indesign","firefly","adobe express","acrobat","adobe sign","document cloud","experience cloud","marketo","magento","workfront"],"markets":[{"name":"Kreativsoftware","basis":"Anteil am Umsatz","size":27.0,"growth":8.0,"revenue":14.0,"players":[["Adobe Creative Cloud",50.0,1],["Adobe Express/Firefly",2.0,1],["Canva",11.0],["Figma",4.0],["CapCut (ByteDance)",3.0],["Apple",2.0],["Alludo (Corel)",2.0],["Avid",1.6],["Blackmagic Design",1.0],["Maxon",1.0],["Picsart",0.6]]},{"name":"CRM-Software","basis":"Anteil am Umsatz","size":90.0,"growth":12.0,"revenue":5.4,"players":[["Adobe Experience Cloud",6.0,1],["Salesforce",27.0],["Microsoft Dynamics 365",5.5],["Oracle",4.5],["SAP",4.0],["HubSpot",3.0],["ServiceNow",3.0],["Zendesk",2.0],["Genesys",2.0],["Pegasystems",1.5],["Zoho",1.5]]},{"name":"Office-Software","basis":"Anteil am Umsatz","size":90.0,"growth":10.0,"revenue":3.2,"players":[["Adobe Acrobat",3.2,1],["Adobe Acrobat Sign",0.3,1],["Microsoft 365",60.0],["Google Workspace",13.0],["Zoom",5.0],["Atlassian",5.0],["DocuSign",3.3],["Dropbox",2.8],["Slack (Salesforce)",2.2],["Box",1.2],["Kingsoft WPS",0.7]]}]},{"id":"db-uber","name":"Uber Technologies, Inc.","hq":"San Francisco, USA","revenue":52,"year":2025,"aliases":["uber","uber eats","postmates","uber freight","drizly","cornershop","careem","uber one"],"markets":[{"name":"Fahrdienstvermittlung","basis":"Anteil an Bruttobuchungen","size":230.0,"growth":12.0,"revenue":29.0,"players":[["Uber Mobility",39.0,1],["DiDi",20.0],["Lyft",7.0],["Grab",3.0],["Bolt",3.0],["Yandex Go",3.0],["T3/Cao Cao",2.0],["Ola",1.5],["inDrive",1.5],["Cabify",1.0],["Gojek",0.7]]},{"name":"Essenslieferung","basis":"Anteil an Bruttobuchungen","size":450.0,"growth":9.0,"revenue":17.5,"players":[["Uber Eats",18.0,1],["Meituan",27.0],["DoorDash",19.0],["Delivery Hero",10.0],["Ele.me (Alibaba)",8.0],["Prosus (iFood, Just Eat Takeaway)",6.0],["Zomato (Eternal)",2.0],["Grab",2.0],["Deliveroo",1.8],["Swiggy",1.4]]},{"name":"Frachtvermittlung","basis":"Anteil am Umsatz (Lkw-Brokerage)","size":150.0,"growth":5.0,"revenue":5.0,"players":[["Uber Freight",3.3,1],["C.H. Robinson",10.0],["TQL",6.0],["RXO",4.0],["J.B. Hunt",3.5],["Landstar",3.3],["Echo Global Logistics",2.5],["Arrive Logistics",2.0],["Hub Group",1.3],["Schneider",1.3],["sennder",0.8]]}]},{"id":"db-cocacola","name":"The Coca-Cola Company","hq":"Atlanta, US","revenue":47,"year":2025,"aliases":["coca-cola","coke","sprite","fanta","minute maid","simply","powerade","bodyarmor","aquarius","dasani","smartwater","fuze tea","gold peak","innocent","costa","fairlife","schweppes","georgia","topo chico","thums up"],"markets":[{"name":"Erfrischungsgetränke","basis":"Anteil am Einzelhandelswert","size":450.0,"growth":4.0,"revenue":31.0,"players":[["Coca-Cola",32.0,1],["Sprite",5.0,1],["Fanta",4.0,1],["Pepsi",12.0],["Dr Pepper",4.0],["Mountain Dew",3.0],["7UP",2.0],["Mirinda",1.5],["Big Cola",1.5],["Schweppes (Suntory)",1.0]]},{"name":"Säfte & Nektare","basis":"Anteil am Einzelhandelswert","size":160.0,"growth":3.0,"revenue":5.0,"players":[["Minute Maid",4.0,1],["Simply",1.5,1],["Innocent",0.4,1],["Tropicana",3.0],["Capri-Sun",1.5],["Ocean Spray",1.5],["Huiyuan",1.0],["Del Monte",1.0],["Florida's Natural",0.8],["Welch's",0.6]]},{"name":"Abgefülltes Wasser","basis":"Anteil am Einzelhandelswert","size":320.0,"growth":5.0,"revenue":3.5,"players":[["Dasani",1.0,1],["smartwater",0.8,1],["Danone (Evian, Aqua)",6.0],["Nongfu Spring",5.0],["Nestlé Waters",5.0],["C'estbon",3.0],["BlueTriton",3.0],["Aquafina",1.5],["Ganten",1.0]]},{"name":"Sportgetränke","basis":"Anteil am Einzelhandelswert","size":35.0,"growth":5.0,"revenue":3.0,"players":[["Powerade",15.0,1],["BodyArmor",7.0,1],["Aquarius",3.0,1],["Gatorade",45.0],["Pocari Sweat",5.0],["Lucozade",3.0],["Prime",3.0],["Electrolit",2.0]]},{"name":"Fertigtee","basis":"Anteil am Einzelhandelswert","size":130.0,"growth":5.0,"revenue":3.0,"players":[["Fuze Tea",2.0,1],["Gold Peak",1.0,1],["Master Kong",18.0],["Uni-President",7.0],["Lipton (PepsiCo JV)",6.0],["Suntory",5.0],["Ito En",4.0],["Nongfu Spring",4.0],["Arizona",2.0]]}]},{"id":"db-pepsico","name":"PepsiCo, Inc.","hq":"Purchase, US","revenue":92,"year":2025,"aliases":["pepsi","lay's","doritos","cheetos","ruffles","tostitos","walkers","fritos","quaker","gatorade","mountain dew","7up","mirinda","aquafina","rockstar","sting","lipton","pure leaf","sodastream","frito-lay","sabra","bare"],"markets":[{"name":"Salzige Snacks","basis":"Anteil am Einzelhandelswert","size":250.0,"growth":5.0,"revenue":34.0,"players":[["Lay's",12.0,1],["Doritos",5.0,1],["Cheetos",3.0,1],["Ruffles",2.0,1],["Tostitos",1.5,1],["Pringles (Mars)",4.0],["Intersnack",2.0],["Calbee",1.5],["Haldiram's",1.0],["Takis (Grupo Bimbo)",1.0],["Kettle (Campbell's)",1.0],["Utz",0.8],["Lorenz",0.6]]},{"name":"Erfrischungsgetränke","basis":"Anteil am Einzelhandelswert","size":450.0,"growth":4.0,"revenue":28.0,"players":[["Pepsi",12.0,1],["Mountain Dew",3.0,1],["7UP",2.0,1],["Mirinda",1.5,1],["Coca-Cola",32.0],["Sprite",5.0],["Fanta",4.0],["Dr Pepper",4.0],["Big Cola",1.5],["Schweppes (Suntory)",1.0]]},{"name":"Sportgetränke","basis":"Anteil am Einzelhandelswert","size":35.0,"growth":5.0,"revenue":7.0,"players":[["Gatorade",45.0,1],["Powerade",15.0],["BodyArmor",7.0],["Pocari Sweat",5.0],["Aquarius",3.0],["Lucozade",3.0],["Prime",3.0],["Electrolit",2.0]]},{"name":"Frühstückscerealien","basis":"Anteil am Einzelhandelswert","size":70.0,"growth":2.0,"revenue":4.0,"players":[["Quaker",5.0,1],["Kellogg's",22.0],["General Mills",18.0],["Post",9.0],["Cereal Partners (Nestlé)",7.0],["Weetabix",2.0],["Jordans (ABF)",1.0],["Dr. Oetker (Vitalis)",1.0]]},{"name":"Energydrinks","basis":"Anteil am Einzelhandelswert","size":80.0,"growth":7.0,"revenue":3.0,"players":[["Sting",3.0,1],["Rockstar",2.0,1],["Red Bull",35.0],["Monster",30.0],["Eastroc",5.0],["Celsius",4.0],["Krating Daeng",2.0],["Prime",1.0],["Bang",1.0]]},{"name":"Fertigtee","basis":"Anteil am Einzelhandelswert","size":130.0,"growth":5.0,"revenue":3.0,"players":[["Lipton (JV)",6.0,1],["Pure Leaf",1.0,1],["Master Kong",18.0],["Uni-President",7.0],["Suntory",5.0],["Ito En",4.0],["Nongfu Spring",4.0],["Fuze Tea",2.0],["Arizona",2.0],["Gold Peak",1.0]]},{"name":"Abgefülltes Wasser","basis":"Anteil am Einzelhandelswert","size":320.0,"growth":5.0,"revenue":2.0,"players":[["Aquafina",1.5,1],["Danone (Evian, Aqua)",6.0],["Nongfu Spring",5.0],["Nestlé Waters",5.0],["C'estbon",3.0],["BlueTriton",3.0],["Ganten",1.0],["Dasani",1.0],["smartwater",0.8]]}]},{"id":"db-unilever","name":"Unilever PLC","hq":"London, GB","revenue":58,"year":2025,"aliases":["dove","axe","lynx","rexona","degree","sure","lux","lifebuoy","vaseline","pond's","sunsilk","tresemmé","clear","omo","persil (unilever)","surf","comfort","domestos","cif","sunlight","knorr","hellmann's","liquid i.v.","dermalogica","hindustan unilever"],"markets":[{"name":"Waschmittel","basis":"Anteil am Einzelhandelswert inkl. Weichspüler","size":150.0,"growth":4.0,"revenue":11.0,"players":[["OMO",4.5,1],["Surf",1.5,1],["Comfort",1.5,1],["Tide",8.0],["Ariel",4.5],["Persil (Henkel)",4.0],["Downy",2.5],["Liby",2.5],["Gain",2.0],["Kao",2.0],["Nice",1.5],["Ghari",1.5]]},{"name":"Haarpflege","basis":"Anteil am Einzelhandelswert","size":100.0,"growth":5.0,"revenue":9.0,"players":[["Dove",3.5,1],["Sunsilk",2.0,1],["TRESemmé",1.5,1],["Clear",1.5,1],["L'Oréal",9.0],["Pantene",4.0],["Head & Shoulders",4.0],["Schwarzkopf",2.5],["Herbal Essences",1.0],["Olaplex",0.5]]},{"name":"Körperpflege & Seife","basis":"Anteil am Einzelhandelswert","size":60.0,"growth":4.0,"revenue":8.0,"players":[["Dove",9.0,1],["Lux",4.0,1],["Lifebuoy",4.0,1],["Palmolive",4.0],["Nivea",4.0],["Dettol",3.0],["Old Spice",2.0],["Olay",2.0],["Safeguard",2.0],["Johnson's",1.0]]},{"name":"Deodorants","basis":"Anteil am Einzelhandelswert","size":30.0,"growth":5.0,"revenue":6.0,"players":[["Rexona / Degree",15.0,1],["Axe",7.0,1],["Dove",6.0,1],["Nivea",9.0],["Old Spice",6.0],["Secret",4.0],["Speed Stick",3.0],["Gillette",2.0],["Native",2.0]]},{"name":"Hautpflege","basis":"Anteil am Einzelhandelswert","size":200.0,"growth":5.0,"revenue":6.0,"players":[["Vaseline",1.2,1],["Pond's",0.8,1],["Prestige (Dermalogica u. a.)",1.0,1],["L'Oréal",9.0],["Estée Lauder",6.0],["Nivea",4.0],["Shiseido",3.5],["Olay",2.0],["Neutrogena",1.5],["Amorepacific",1.5],["Chanel",1.5]]},{"name":"Saucen & Dressings","basis":"Anteil am Einzelhandelswert","size":160.0,"growth":4.0,"revenue":7.0,"players":[["Hellmann's",4.0,1],["Heinz",6.0],["McCormick",3.0],["Haitian",2.0],["Kikkoman",2.0],["Kewpie",1.5],["Lee Kum Kee",1.5],["Mars (Ben's Original)",1.0],["Barilla",0.8]]},{"name":"Suppen & Brühen","basis":"Anteil am Einzelhandelswert","size":50.0,"growth":3.0,"revenue":5.0,"players":[["Knorr",18.0,1],["Maggi (Nestlé)",14.0],["Campbell's",10.0],["Progresso (General Mills)",3.0],["Heinz",2.0],["Oxo",1.0],["Ajinomoto",2.0],["Nissin",1.5]]}]},{"id":"db-pg","name":"The Procter & Gamble Company","hq":"Cincinnati, US","revenue":84,"year":2025,"aliases":["procter & gamble","p&g","tide","ariel","downy","lenor","gain","pampers","gillette","venus","oral-b","crest","pantene","head & shoulders","herbal essences","charmin","bounty","dawn","fairy","swiffer","febreze","mr. clean","always","tampax","olay"],"markets":[{"name":"Waschmittel","basis":"Anteil am Einzelhandelswert inkl. Weichspüler","size":150.0,"growth":4.0,"revenue":24.0,"players":[["Tide",8.0,1],["Ariel",4.5,1],["Downy / Lenor",2.5,1],["Gain",2.0,1],["OMO",4.5],["Persil (Henkel)",4.0],["Liby",2.5],["Kao",2.0],["Surf",1.5],["Comfort",1.5],["Nice",1.5],["Ghari",1.5]]},{"name":"Babywindeln","basis":"Anteil am Einzelhandelswert","size":75.0,"growth":3.0,"revenue":9.0,"players":[["Pampers",22.0,1],["Huggies (Kimberly-Clark)",18.0],["MamyPoko / Moony (Unicharm)",10.0],["Merries (Kao)",4.0],["Hengan",3.0],["Ontex",3.0],["Libero (Essity)",2.0],["Bambo Nature",1.0]]},{"name":"Toilettenpapier & Tücher","basis":"Anteil am Einzelhandelswert","size":110.0,"growth":3.0,"revenue":9.0,"players":[["Charmin",5.0,1],["Bounty",3.0,1],["Essity (Tempo, Zewa)",9.0],["Kimberly-Clark (Kleenex, Cottonelle)",8.0],["Georgia-Pacific",7.0],["Hengan",3.0],["Sofidel",3.0],["APP Sinar Mas",3.0],["Vinda",2.5],["Kruger",1.5]]},{"name":"Haarpflege","basis":"Anteil am Einzelhandelswert","size":100.0,"growth":5.0,"revenue":8.0,"players":[["Pantene",4.0,1],["Head & Shoulders",4.0,1],["Herbal Essences",1.0,1],["L'Oréal",9.0],["Dove",3.5],["Schwarzkopf",2.5],["Sunsilk",2.0],["TRESemmé",1.5],["Clear",1.5],["Olaplex",0.5]]},{"name":"Haushaltsreiniger","basis":"Anteil am Einzelhandelswert inkl. Spülmittel und Lufterfrisc","size":70.0,"growth":4.0,"revenue":8.0,"players":[["Dawn / Fairy",6.0,1],["Febreze",2.5,1],["Swiffer",2.0,1],["Mr. Clean",1.5,1],["Lysol (Reckitt)",6.0],["Clorox",6.0],["Finish (Reckitt)",4.0],["Glade (SC Johnson)",3.0],["Domestos",2.0],["Pril (Henkel)",1.5],["Cif",1.5]]},{"name":"Mundpflege","basis":"Anteil am Einzelhandelswert","size":55.0,"growth":4.0,"revenue":7.0,"players":[["Oral-B",8.0,1],["Crest",6.0,1],["Colgate",30.0],["Sensodyne (Haleon)",8.0],["Philips Sonicare",6.0],["Listerine (Kenvue)",4.0],["Darlie",3.0],["Lion",2.0],["Signal / Pepsodent",2.0]]},{"name":"Rasur","basis":"Anteil am Einzelhandelswert Nassrasur","size":30.0,"growth":3.0,"revenue":6.5,"players":[["Gillette",50.0,1],["Venus",6.0,1],["Schick / Wilkinson (Edgewell)",12.0],["Bic",7.0],["Harry's",4.0],["Dorco",3.0],["Dollar Shave Club",2.0],["Billie",1.0]]}]},{"id":"db-loreal","name":"L'Oréal S.A.","hq":"Clichy, FR","revenue":48,"year":2025,"aliases":["l'oréal paris","garnier","maybelline","nyx","lancôme","yves saint laurent beauté","ysl beauty","giorgio armani beauty","kiehl's","kérastase","redken","matrix","l'oréal professionnel","cerave","la roche-posay","vichy","skinceuticals","urban decay","prada beauty","valentino beauty","aesop","mugler","essie"],"markets":[{"name":"Hautpflege","basis":"Anteil am Einzelhandelswert","size":200.0,"growth":5.0,"revenue":18.0,"players":[["La Roche-Posay",2.2,1],["CeraVe",2.2,1],["Lancôme",1.8,1],["L'Oréal Paris",1.5,1],["Garnier",0.7,1],["Kiehl's",0.6,1],["Estée Lauder",6.0],["Nivea",4.0],["Shiseido",3.5],["Olay",2.0],["Neutrogena",1.5],["Amorepacific",1.5],["Chanel",1.5],["Dior",1.5],["Unilever (Vaseline, Pond's)",3.0]]},{"name":"Make-up","basis":"Anteil am Einzelhandelswert","size":110.0,"growth":5.0,"revenue":10.8,"players":[["Maybelline",4.0,1],["L'Oréal Paris",3.0,1],["Lancôme",0.8,1],["YSL Beauté",0.8,1],["NYX",0.8,1],["Urban Decay",0.4,1],["Estée Lauder (MAC u. a.)",7.0],["Coty",3.0],["Dior",2.5],["Chanel",2.5],["Shiseido",2.0],["Revlon",1.5],["e.l.f.",1.2],["Fenty Beauty",1.0],["Charlotte Tilbury",1.0]]},{"name":"Haarpflege","basis":"Anteil am Einzelhandelswert","size":100.0,"growth":5.0,"revenue":9.0,"players":[["L'Oréal Paris (Elvive)",3.0,1],["Kérastase",2.0,1],["Garnier Fructis",2.0,1],["L'Oréal Professionnel / Redken",2.0,1],["Pantene",4.0],["Head & Shoulders",4.0],["Dove",3.5],["Schwarzkopf",2.5],["Sunsilk",2.0],["TRESemmé",1.5],["Clear",1.5]]},{"name":"Parfüm","basis":"Anteil am Einzelhandelswert","size":70.0,"growth":6.0,"revenue":8.4,"players":[["YSL Beauté",3.5,1],["Giorgio Armani",3.5,1],["Lancôme",2.0,1],["Prada",1.0,1],["Valentino",1.0,1],["Ralph Lauren",1.0,1],["Chanel",7.0],["Dior",7.0],["Coty",5.0],["Puig",5.0],["Estée Lauder",4.0],["Interparfums",1.5],["Shiseido",1.5],["Guerlain",1.3],["Givenchy",1.2]]},{"name":"Haarfarben","basis":"Anteil am Einzelhandelswert inkl. Salon","size":25.0,"growth":4.0,"revenue":4.2,"players":[["L'Oréal Paris",8.0,1],["Garnier",5.0,1],["L'Oréal Professionnel / Matrix",4.0,1],["Schwarzkopf",12.0],["Wella",8.0],["Kao",6.0],["Hoyu",5.0],["Revlon",2.0],["Madison Reed",1.0]]}]},{"id":"db-lvmh","name":"LVMH Moët Hennessy Louis Vuitton SE","hq":"Paris, FR","revenue":88,"year":2025,"aliases":["louis vuitton","dior","christian dior","celine","loewe","fendi","givenchy","loro piana","kenzo","marc jacobs","berluti","tiffany","bulgari","tag heuer","hublot","zenith","chaumet","sephora","dfs","guerlain","benefit","fenty beauty","moët & chandon","dom pérignon","veuve clicquot"],"markets":[{"name":"Luxusmode & Leder","basis":"Anteil am Umsatz persönlicher Luxusgüter Mode/Leder","size":220.0,"growth":3.0,"revenue":44.0,"players":[["Louis Vuitton",11.0,1],["Dior",4.5,1],["Celine",1.3,1],["Loewe",1.0,1],["Fendi",0.9,1],["Loro Piana",0.8,1],["Givenchy",0.3,1],["Chanel",8.0],["Hermès",7.0],["Gucci",3.5],["Ralph Lauren",3.0],["Prada Group",2.7],["Coach (Tapestry)",2.5],["Michael Kors",1.5],["Moncler",1.4],["Saint Laurent",1.3],["Burberry",1.2]]},{"name":"Beauty-Fachhandel","basis":"Anteil am Umsatz im selektiven Beauty-Einzelhandel","size":120.0,"growth":6.0,"revenue":17.0,"players":[["Sephora",14.0,1],["Ulta Beauty",9.0],["Amazon Beauty",8.0],["Watsons",5.0],["Douglas",4.0],["Boots",3.0],["Olive Young",3.0],["Macy's Beauty",2.0]]},{"name":"Uhren & Schmuck","basis":"Anteil am Umsatz Luxusuhren und -schmuck","size":110.0,"growth":4.0,"revenue":11.0,"players":[["Tiffany",5.0,1],["Bulgari",3.0,1],["TAG Heuer",1.0,1],["Hublot",0.7,1],["Chaumet",0.3,1],["Richemont (Cartier, Van Cleef)",15.0],["Rolex",10.0],["Chow Tai Fook",8.0],["Swatch Group",6.0],["Pandora",4.0],["Patek Philippe",2.5],["Audemars Piguet",2.0],["Chopard",1.0]]},{"name":"Parfüm","basis":"Anteil am Einzelhandelswert","size":70.0,"growth":6.0,"revenue":7.0,"players":[["Dior",7.0,1],["Guerlain",1.3,1],["Givenchy",1.2,1],["Chanel",7.0],["YSL Beauté",3.5],["Giorgio Armani",3.5],["Coty",5.0],["Puig",5.0],["Estée Lauder",4.0],["Lancôme",2.0],["Interparfums",1.5],["Shiseido",1.5],["Hermès",1.0]]},{"name":"Cognac","basis":"Anteil am Herstellerumsatz","size":7.0,"growth":1.0,"revenue":3.2,"players":[["Hennessy",45.0,1],["Martell (Pernod Ricard)",22.0],["Rémy Martin",12.0],["Courvoisier (Campari)",6.0],["Camus",2.0],["Otard (Bacardi)",2.0],["Hine",0.5],["Bisquit",0.5]]},{"name":"Reisehandel","basis":"Anteil am Duty-Free-Umsatz","size":75.0,"growth":6.0,"revenue":3.0,"players":[["DFS",4.0,1],["Avolta",17.0],["China Duty Free",9.0],["Lagardère Travel Retail",6.0],["Lotte Duty Free",5.0],["Shilla Duty Free",4.0],["Gebr. Heinemann",4.0],["Shinsegae",2.5],["King Power",2.0]]},{"name":"Champagner","basis":"Anteil am Herstellerumsatz","size":8.0,"growth":1.0,"revenue":2.8,"players":[["Moët & Chandon",15.0,1],["Veuve Clicquot",10.0,1],["Dom Pérignon",4.0,1],["Ruinart",3.0,1],["Krug",1.5,1],["Pernod Ricard (Mumm, Perrier-Jouët)",6.0],["Louis Roederer",3.0],["Lanson-BCC",2.5],["Vranken-Pommery",2.5],["Nicolas Feuillatte",2.5],["Taittinger",2.0],["Laurent-Perrier",2.0],["Bollinger",1.5]]}]},{"id":"db-nike","name":"Nike, Inc.","hq":"Beaverton, US","revenue":46,"year":2025,"aliases":["nike","jordan","air jordan","converse","nike sportswear","air max","air force 1","dunk","swoosh"],"markets":[{"name":"Lifestyle-Sneaker","basis":"Anteil am Einzelhandelswert","size":90.0,"growth":4.0,"revenue":20.0,"players":[["Nike",14.0,1],["Jordan",6.0,1],["Converse",2.0,1],["Adidas",9.0],["Skechers",6.0],["New Balance",4.0],["Puma",3.0],["Vans",2.5],["Anta",2.0],["Fila",1.5],["Li Ning",1.0]]},{"name":"Sportbekleidung","basis":"Anteil am Einzelhandelswert","size":220.0,"growth":5.0,"revenue":12.8,"players":[["Nike",5.0,1],["Jordan",0.8,1],["Lululemon",4.5],["Adidas",4.0],["Anta (inkl. Fila)",3.0],["Decathlon",3.0],["Under Armour",1.8],["The North Face",1.6],["Puma",1.5],["Columbia",1.5],["Li Ning",1.0]]},{"name":"Performance-Sportschuhe","basis":"Anteil am Einzelhandelswert (Laufen, Fußball, Basketball u. ","size":80.0,"growth":6.0,"revenue":12.0,"players":[["Nike",13.0,1],["Jordan",2.0,1],["Adidas",11.0],["Asics",6.0],["New Balance",4.0],["Puma",4.0],["Anta",4.0],["Hoka",3.0],["On",3.0],["Brooks",2.0],["Under Armour",1.5],["Mizuno",1.0]]},{"name":"Sportausrüstung","basis":"Anteil am Einzelhandelswert (Bälle, Taschen, Zubehör)","size":85.0,"growth":3.0,"revenue":1.5,"players":[["Nike",1.8,1],["Decathlon",4.0],["Acushnet",3.0],["Wilson",2.0],["Callaway",2.0],["Adidas",1.5],["Yonex",1.0],["Mizuno",0.8],["Under Armour",0.5]]}]},{"id":"db-inditex","name":"Industria de Diseño Textil, S.A. (Inditex)","hq":"Arteixo, ES","revenue":44,"year":2025,"aliases":["inditex","zara","zara home","pull&bear","massimo dutti","bershka","stradivarius","oysho","lefties"],"markets":[{"name":"Damenbekleidung","basis":"Anteil am Einzelhandelswert","size":900.0,"growth":4.0,"revenue":23.0,"players":[["Zara",1.6,1],["Bershka",0.3,1],["Stradivarius",0.3,1],["Pull&Bear",0.2,1],["Massimo Dutti",0.2,1],["Shein",2.5],["H&M",1.8],["Uniqlo",1.0],["Gap",0.9],["Primark",0.8],["Next",0.5],["Mango",0.4]]},{"name":"Herrenbekleidung","basis":"Anteil am Einzelhandelswert","size":550.0,"growth":4.0,"revenue":11.0,"players":[["Zara",1.2,1],["Massimo Dutti",0.3,1],["Pull&Bear",0.3,1],["Bershka",0.2,1],["Nike",2.0],["Uniqlo",1.6],["H&M",1.4],["PVH",1.3],["Shein",1.0],["Adidas",1.0],["Levi's",0.9],["Ralph Lauren",0.8],["Primark",0.6],["Gap",0.6]]},{"name":"Kinderbekleidung","basis":"Anteil am Einzelhandelswert","size":230.0,"growth":3.0,"revenue":3.7,"players":[["Zara Kids",1.6,1],["H&M",2.0],["Nike",1.5],["Carter's",1.4],["Gap (Old Navy)",1.2],["Shein",1.2],["Primark",1.0],["Uniqlo",0.8],["Next",0.6]]},{"name":"Modeschuhe & Taschen","basis":"Anteil am Einzelhandelswert (ohne Sportschuhe)","size":300.0,"growth":3.0,"revenue":3.0,"players":[["Zara",0.6,1],["Bershka",0.2,1],["Stradivarius",0.2,1],["Louis Vuitton",3.0],["Coach (Tapestry)",1.5],["Deichmann",1.3],["Michael Kors",1.0],["Skechers",1.0],["Shein",0.8],["Steve Madden",0.8],["H&M",0.6],["Clarks",0.5],["Primark",0.5]]},{"name":"Wohntextilien & Deko","basis":"Anteil am Einzelhandelswert","size":150.0,"growth":3.0,"revenue":2.6,"players":[["Zara Home",1.7,1],["IKEA",8.0],["Williams-Sonoma",3.0],["Target",2.5],["JYSK",2.0],["Maisons du Monde",0.8],["H&M Home",0.6],["Westwing",0.3],["Søstrene Grene",0.2]]}]},{"id":"db-abinbev","name":"Anheuser-Busch InBev SA/NV","hq":"Leuven, BE","revenue":59,"year":2025,"aliases":["ab inbev","anheuser-busch","budweiser","bud light","michelob ultra","corona","stella artois","beck's","hoegaarden","leffe","brahma","skol","quilmes","aguila","harbin","castle","busch","natural light","modelo (außerhalb usa)","guaraná antarctica","cutwater","ambev","franziskaner","löwenbräu","spaten"],"markets":[{"name":"Standard-Bier","basis":"Anteil am Herstellerumsatz Mainstream-Segment","size":330.0,"growth":1.0,"revenue":30.0,"players":[["Skol",2.0,1],["Bud Light",2.5,1],["Brahma",1.5,1],["Harbin",0.8,1],["Aguila",0.7,1],["Castle",0.7,1],["Busch",0.6,1],["Natural Light",0.4,1],["Quilmes",0.4,1],["Heineken",6.0],["China Resources Snow",4.0],["Carlsberg",3.5],["Molson Coors",3.5],["Asahi",3.0],["Kirin",2.5],["Tsingtao",2.5],["San Miguel",1.5],["Grupo Petrópolis",1.0],["Constellation Brands",1.0]]},{"name":"Premium-Bier","basis":"Anteil am Herstellerumsatz Premium-Segment","size":200.0,"growth":5.0,"revenue":22.0,"players":[["Corona",4.0,1],["Michelob Ultra",2.5,1],["Budweiser",2.5,1],["Stella Artois",1.5,1],["Hoegaarden",0.3,1],["Leffe",0.3,1],["Heineken",8.0],["Constellation (Modelo)",4.5],["Asahi (Peroni, Pilsner Urquell)",3.0],["Guinness (Diageo)",2.5],["Carlsberg",2.0],["Tsingtao",1.5],["Kirin",1.5],["China Resources",1.5],["Sapporo",0.7]]},{"name":"Erfrischungsgetränke","basis":"Anteil am Einzelhandelswert","size":450.0,"growth":4.0,"revenue":2.5,"players":[["Guaraná Antarctica",0.6,1],["Coca-Cola",32.0],["Pepsi",12.0],["Sprite",5.0],["Fanta",4.0],["Dr Pepper",4.0],["Mountain Dew",3.0],["7UP",2.0],["Big Cola",1.5]]},{"name":"Alkoholfreies Bier","basis":"Anteil am Einzelhandelswert","size":25.0,"growth":8.0,"revenue":1.5,"players":[["Brahma 0.0",2.0,1],["Corona Cero",1.5,1],["Budweiser Zero",1.0,1],["Beck's Blue",1.0,1],["Stella Artois 0.0",0.5,1],["Heineken 0.0",10.0],["Carlsberg",4.0],["Erdinger",3.0],["Krombacher",3.0],["Asahi",3.0],["Bitburger",2.0],["Kirin",2.0],["Athletic Brewing",1.5],["Guinness 0.0",1.5]]},{"name":"Fertig-Mixgetränke","basis":"Anteil am Einzelhandelswert (Hard Seltzer, RTD)","size":40.0,"growth":4.0,"revenue":1.2,"players":[["Cutwater",1.5,1],["Michelob Ultra Seltzer",0.5,1],["Bud Light Seltzer",0.5,1],["Brutal Fruit",0.5,1],["White Claw",8.0],["Suntory (-196)",6.0],["Boston Beer (Truly, Twisted Tea)",6.0],["High Noon",4.0],["Smirnoff Ice (Diageo)",4.0],["Asahi",2.0],["Bacardi Breezer",1.5]]}]},{"id":"db-mondelez","name":"Mondelez International, Inc.","hq":"Chicago, US","revenue":38,"year":2025,"aliases":["oreo","chips ahoy!","belvita","lu","ritz","triscuit","wheat thins","tuc","milka","cadbury","toblerone","côte d'or","trident","halls","sour patch kids","clif","tate's","7 days","philadelphia (außerhalb nordamerika)","tang","prince","daim"],"markets":[{"name":"Süßwaren","basis":"Anteil am Einzelhandelswert (Schokolade, Bonbons, Kaugummi)","size":140.0,"growth":4.0,"revenue":15.0,"players":[["Cadbury",4.5,1],["Milka",2.8,1],["Trident",1.0,1],["Halls",0.7,1],["Toblerone",0.6,1],["Sour Patch Kids",0.5,1],["Côte d'Or",0.4,1],["Mars",13.0],["Ferrero",10.0],["Hershey",8.0],["Nestlé",4.5],["Lindt & Sprüngli",4.0],["Haribo",2.5],["Perfetti Van Melle",2.5],["Meiji",2.0],["Lotte",2.0]]},{"name":"Kekse","basis":"Anteil am Einzelhandelswert süßes Gebäck","size":95.0,"growth":4.0,"revenue":10.0,"players":[["Oreo",6.0,1],["LU",1.6,1],["belVita",1.3,1],["Chips Ahoy!",1.0,1],["Milka / Cadbury Kekse",0.4,1],["Tate's",0.2,1],["Ferrero (Keebler, Fox's)",2.5],["Pladis (McVitie's, Ülker)",2.5],["Britannia",1.8],["Pepperidge Farm",1.8],["Parle",1.6],["Lotus Bakeries",0.8],["Arnott's",0.8],["Lotte",0.7],["Bahlsen",0.6]]},{"name":"Cracker","basis":"Anteil am Einzelhandelswert","size":30.0,"growth":3.0,"revenue":4.8,"players":[["Ritz",9.0,1],["Triscuit",3.0,1],["Wheat Thins",3.0,1],["Tuc",1.0,1],["Cheez-It (Mars)",10.0],["Goldfish (Campbell's)",8.0],["Arnott's",2.5],["Town House (Ferrero)",2.0],["Pladis",2.0],["Britannia",2.0],["Jacob's",1.5],["Nissin",1.0]]},{"name":"Snackriegel","basis":"Anteil am Einzelhandelswert","size":30.0,"growth":5.0,"revenue":1.5,"players":[["Clif",4.0,1],["Grenade",1.0,1],["Nature Valley (General Mills)",12.0],["Mars (Kind, RXBAR)",10.0],["Quest",4.0],["Quaker",3.0],["Nutri-Grain",3.0],["Atkins",2.0],["Barebells",2.0]]},{"name":"Kuchen & Backsnacks","basis":"Anteil am Einzelhandelswert abgepackter Kuchen","size":70.0,"growth":4.0,"revenue":1.4,"players":[["7 Days",1.2,1],["Milka / Cadbury Kuchen",0.8,1],["Grupo Bimbo",6.0],["Yamazaki",5.0],["Hostess (Smucker)",3.0],["Little Debbie",2.5],["Flowers Foods",1.5],["Orion",1.5],["Lotte",1.0],["Britannia",1.0]]}]},{"id":"db-jnj","name":"Johnson & Johnson","hq":"New Brunswick, US","revenue":92,"year":2025,"aliases":["j&j","johnson and johnson","janssen","jnj innovative medicine","jnj medtech","depuy synthes","ethicon","biosense webster","abiomed","shockwave medical","acuvue","darzalex","stelara","tremfya","carvykti","erleada","spravato"],"markets":[{"name":"Onkologie","basis":"Anteil am Umsatz","size":250.0,"growth":9.0,"revenue":25.0,"players":[["Darzalex",5.6,1],["Erleada",1.3,1],["Imbruvica",1.0,1],["Merck & Co.",12.0],["Roche",9.0],["AstraZeneca",9.0],["Bristol Myers Squibb",7.0],["Pfizer",6.0],["Novartis",5.0],["Amgen",3.0],["AbbVie",3.0],["Eli Lilly",2.5],["Gilead",2.0]]},{"name":"Immunologie","basis":"Anteil am Umsatz","size":140.0,"growth":7.0,"revenue":18.0,"players":[["Stelara",5.0,1],["Tremfya",3.2,1],["Simponi",1.4,1],["AbbVie",20.0],["Sanofi",10.0],["Eli Lilly",5.0],["Novartis",5.0],["Amgen",5.0],["Pfizer",3.0],["UCB",2.0],["Bristol Myers Squibb",2.0]]},{"name":"Neurowissenschaften","basis":"Anteil am Umsatz","size":160.0,"growth":5.0,"revenue":8.0,"players":[["Invega-Familie",2.5,1],["Spravato",0.8,1],["AbbVie",5.0],["Roche",5.5],["Biogen",4.0],["Otsuka/Lundbeck",4.0],["Eli Lilly",3.0],["Novartis",3.0],["Teva",2.0],["Pfizer",2.0]]},{"name":"Pulmonale Hypertonie","basis":"Anteil am Umsatz","size":9.0,"growth":6.0,"revenue":4.0,"players":[["Opsumit",22.0,1],["Uptravi",18.0,1],["United Therapeutics",20.0],["Merck & Co.",15.0],["Bayer",8.0],["GSK",2.0],["Viatris",2.0],["Liquidia",1.0]]},{"name":"Orthopädie","basis":"Anteil am Umsatz","size":60.0,"growth":5.0,"revenue":9.0,"players":[["DePuy Synthes",15.0,1],["Stryker",18.0],["Zimmer Biomet",13.0],["Smith+Nephew",9.0],["Medtronic",4.0],["Globus Medical",4.0],["Arthrex",4.0],["Enovis",3.0]]},{"name":"Chirurgische Geräte","basis":"Anteil am Umsatz","size":60.0,"growth":5.0,"revenue":10.0,"players":[["Ethicon",17.0,1],["Medtronic",15.0],["Intuitive Surgical",13.0],["BD",5.0],["Stryker",5.0],["B. Braun",5.0],["Olympus",4.0],["Teleflex",3.0],["Baxter",3.0]]},{"name":"Kardiovaskuläre Medizintechnik","basis":"Anteil am Umsatz","size":70.0,"growth":9.0,"revenue":8.0,"players":[["Biosense Webster",7.0,1],["Abiomed",2.0,1],["Shockwave",1.5,1],["Medtronic",17.0],["Boston Scientific",15.0],["Abbott",14.0],["Edwards Lifesciences",9.0],["Terumo",3.0],["BD",2.0]]},{"name":"Augenheilkunde Medtech","basis":"Anteil am Umsatz","size":45.0,"growth":5.0,"revenue":5.5,"players":[["J&J Vision (Acuvue)",12.0,1],["Alcon",22.0],["Bausch + Lomb",10.0],["CooperVision",9.0],["Zeiss",6.0],["Hoya",3.0],["Menicon",2.0]]}]},{"id":"db-roche","name":"Roche Holding AG","hq":"Basel, CH","revenue":74,"year":2025,"aliases":["roche","f. hoffmann-la roche","genentech","chugai","roche diagnostics","foundation medicine","ocrevus","hemlibra","vabysmo","perjeta","phesgo","tecentriq","kadcyla","xolair","evrysdi"],"markets":[{"name":"Onkologie","basis":"Anteil am Umsatz","size":250.0,"growth":9.0,"revenue":24.0,"players":[["Perjeta & Phesgo",2.4,1],["Herceptin & Avastin",2.0,1],["Tecentriq",1.6,1],["Kadcyla",1.0,1],["Polivy",0.7,1],["Alecensa",0.7,1],["Gazyva & Columvi",0.5,1],["Merck & Co.",12.0],["AstraZeneca",9.0],["Bristol Myers Squibb",7.0],["Johnson & Johnson",7.0],["Pfizer",6.0],["Novartis",5.0],["AbbVie",3.0],["Amgen",3.0]]},{"name":"Neurowissenschaften","basis":"Anteil am Umsatz","size":160.0,"growth":5.0,"revenue":9.0,"players":[["Ocrevus",4.4,1],["Evrysdi",1.1,1],["AbbVie",5.0],["Biogen",4.0],["Otsuka/Lundbeck",4.0],["Johnson & Johnson",3.3],["Eli Lilly",3.0],["Novartis",3.0],["Teva",2.0],["Pfizer",2.0]]},{"name":"Immunologie","basis":"Anteil am Umsatz","size":140.0,"growth":7.0,"revenue":7.0,"players":[["Actemra",1.9,1],["Xolair",1.8,1],["AbbVie",20.0],["Sanofi",10.0],["Johnson & Johnson",9.5],["Eli Lilly",5.0],["Novartis",5.0],["Amgen",5.0],["Pfizer",3.0],["UCB",2.0]]},{"name":"Hämophilie","basis":"Anteil am Umsatz","size":14.0,"growth":4.0,"revenue":4.8,"players":[["Hemlibra",33.0,1],["Takeda",14.0],["Novo Nordisk",13.5],["Sanofi",12.0],["CSL Behring",10.0],["Octapharma",4.0],["Pfizer",3.0],["Grifols",2.0]]},{"name":"Ophthalmologie Pharma","basis":"Anteil am Umsatz","size":40.0,"growth":6.0,"revenue":4.5,"players":[["Vabysmo",11.0,1],["Regeneron",22.0],["Bayer",8.0],["Novartis",6.0],["AbbVie",6.0],["Santen",5.0],["Apellis",2.0],["Astellas",2.0]]},{"name":"In-vitro-Diagnostik","basis":"Anteil am Umsatz","size":95.0,"growth":5.0,"revenue":17.0,"players":[["Roche Diagnostics",18.0,1],["Abbott",12.0],["Danaher",11.0],["Siemens Healthineers",6.0],["Thermo Fisher",6.0],["BD",4.0],["bioMérieux",4.0],["Sysmex",3.0],["QuidelOrtho",3.0]]}]},{"id":"db-novartis","name":"Novartis AG","hq":"Basel, CH","revenue":55,"year":2025,"aliases":["novartis","entresto","cosentyx","kisqali","kesimpta","pluvicto","leqvio","zolgensma","scemblix","promacta","jakavi","tafinlar","mekinist","ilaris","advanced accelerator applications","avexis"],"markets":[{"name":"Onkologie","basis":"Anteil am Umsatz","size":250.0,"growth":9.0,"revenue":17.0,"players":[["Kisqali",1.8,1],["Tafinlar + Mekinist",0.8,1],["Pluvicto",0.8,1],["Promacta",0.8,1],["Jakavi",0.7,1],["Tasigna",0.6,1],["Scemblix",0.5,1],["Merck & Co.",12.0],["Roche",9.0],["AstraZeneca",9.0],["Bristol Myers Squibb",7.0],["Johnson & Johnson",7.0],["Pfizer",6.0],["AbbVie",3.0],["Amgen",3.0]]},{"name":"Herz-Kreislauf","basis":"Anteil am Umsatz","size":150.0,"growth":4.0,"revenue":9.0,"players":[["Entresto",5.0,1],["Leqvio",0.8,1],["BMS/Pfizer (Eliquis)",13.0],["Boehringer/Lilly (Jardiance)",7.0],["AstraZeneca",6.0],["J&J/Bayer (Xarelto)",6.0],["Pfizer (Vyndaqel)",4.0],["Daiichi Sankyo",2.0],["Merck & Co.",2.0],["Amgen",1.5]]},{"name":"Immunologie","basis":"Anteil am Umsatz","size":140.0,"growth":7.0,"revenue":8.0,"players":[["Cosentyx",4.6,1],["Ilaris",1.0,1],["AbbVie",20.0],["Sanofi",10.0],["Johnson & Johnson",9.5],["Eli Lilly",5.0],["Amgen",5.0],["Pfizer",3.0],["Roche",2.6],["UCB",2.0]]},{"name":"Neurowissenschaften","basis":"Anteil am Umsatz","size":160.0,"growth":5.0,"revenue":6.0,"players":[["Kesimpta",2.5,1],["Zolgensma",0.7,1],["Roche",5.5],["AbbVie",5.0],["Biogen",4.0],["Otsuka/Lundbeck",4.0],["Johnson & Johnson",3.3],["Eli Lilly",3.0],["Teva",2.0],["Pfizer",2.0]]},{"name":"Atemwegserkrankungen","basis":"Anteil am Umsatz","size":45.0,"growth":3.0,"revenue":2.5,"players":[["Xolair (ex-US)",4.0,1],["Ultibro & Enerzair",1.0,1],["GSK",20.0],["AstraZeneca",15.0],["Sanofi",12.0],["Boehringer Ingelheim",8.0],["Chiesi",4.0],["Roche",4.0],["Teva",3.0],["Viatris",2.0]]}]},{"id":"db-novonordisk","name":"Novo Nordisk A/S","hq":"Bagsværd, DK","revenue":46,"year":2025,"aliases":["novo nordisk","novo","ozempic","wegovy","rybelsus","victoza","saxenda","tresiba","novorapid","levemir","norditropin","sogroya","novoseven","alhemo","catalent"],"markets":[{"name":"Diabetes & Adipositas","basis":"Anteil am Umsatz","size":170.0,"growth":12.0,"revenue":42.0,"players":[["Ozempic",11.0,1],["Wegovy",7.0,1],["Rybelsus",2.0,1],["Insuline (Tresiba, NovoRapid u. a.)",4.0,1],["Victoza & Saxenda",1.0,1],["Mounjaro (Lilly)",13.5],["Zepbound (Lilly)",7.5],["Jardiance (Boehringer/Lilly)",8.0],["Farxiga (AstraZeneca)",4.0],["Sanofi (Lantus, Toujeo)",4.0],["Trulicity (Lilly)",2.5],["Lilly Insuline",2.0],["Januvia (Merck & Co.)",1.5]]},{"name":"Hämophilie","basis":"Anteil am Umsatz","size":14.0,"growth":4.0,"revenue":1.8,"players":[["NovoSeven",8.0,1],["NovoEight & Esperoct",5.0,1],["Alhemo",0.5,1],["Roche (Hemlibra)",33.0],["Takeda",14.0],["Sanofi",12.0],["CSL Behring",10.0],["Octapharma",4.0],["Pfizer",3.0],["Grifols",2.0]]},{"name":"Wachstumshormone","basis":"Anteil am Umsatz","size":5.0,"growth":5.0,"revenue":1.2,"players":[["Norditropin & Sogroya",24.0,1],["Pfizer (Genotropin, Ngenla)",22.0],["Merck KGaA",12.0],["Ascendis Pharma",10.0],["Sandoz",8.0],["Eli Lilly",5.0],["Ipsen",4.0],["Ferring",3.0]]}]},{"id":"db-boeing","name":"The Boeing Company","hq":"Arlington, US","revenue":89,"year":2025,"aliases":["boeing","boeing commercial airplanes","boeing defense space & security","boeing global services","spirit aerosystems","jeppesen","aviall","insitu","boeing 737","boeing 787"],"markets":[{"name":"Verkehrsflugzeuge","basis":"Anteil am Umsatz","size":130.0,"growth":8.0,"revenue":41.0,"players":[["Boeing 737",19.0,1],["Boeing 787",10.0,1],["Boeing 777 & 767",2.5,1],["Airbus A320-Familie",34.0],["Airbus A350",8.0],["Airbus A220",2.0],["Airbus A330",2.0],["Embraer",3.0],["COMAC",2.0],["ATR",1.5]]},{"name":"Verteidigungstechnik","basis":"Anteil am Umsatz","size":400.0,"growth":5.0,"revenue":26.0,"players":[["Boeing Defense, Space & Security",6.5,1],["Lockheed Martin",17.0],["RTX",10.0],["Northrop Grumman",10.0],["General Dynamics",8.0],["BAE Systems",8.0],["L3Harris",5.0],["Leonardo",4.0],["Airbus Defence and Space",3.5],["Thales",3.0]]},{"name":"Luftfahrt-Aftermarket","basis":"Anteil am Umsatz","size":160.0,"growth":6.0,"revenue":20.0,"players":[["Boeing Global Services",12.5,1],["GE Aerospace",18.0],["RTX (Pratt & Whitney, Collins)",14.0],["Safran",10.0],["Honeywell Aerospace",6.0],["Rolls-Royce",6.0],["Airbus Services",5.0],["Lufthansa Technik",4.0],["ST Engineering",2.0],["AAR",1.5]]}]},{"id":"db-shell","name":"Shell plc","hq":"London, GB","revenue":270,"year":2025,"aliases":["shell","royal dutch shell","shell lng","shell energy","shell recharge","pennzoil","quaker state","shell helix","shell v-power","sprng energy","nature energy"],"markets":[{"name":"Öl- & Gasförderung","basis":"Anteil an der Förderung","size":2800.0,"growth":1.0,"revenue":60.0,"players":[["Shell Upstream",2.1,1],["Saudi Aramco",12.0],["Rosneft",5.0],["NIOC",4.0],["ExxonMobil",3.5],["PetroChina",3.5],["ADNOC",3.5],["QatarEnergy",3.0],["Chevron",2.8],["Petrobras",2.5]]},{"name":"Erdgas & LNG","basis":"Anteil am LNG-Handelsvolumen","size":180.0,"growth":4.0,"revenue":30.0,"players":[["Shell LNG",16.0,1],["QatarEnergy",17.0],["Cheniere",11.0],["TotalEnergies",10.0],["ExxonMobil",6.0],["Petronas",6.0],["BP",5.0],["Chevron",5.0],["Novatek",4.0],["Woodside",3.0]]},{"name":"Kraftstoffvertrieb","basis":"Anteil am Absatzvolumen","size":1800.0,"growth":1.0,"revenue":108.0,"players":[["Shell Mobility",6.0,1],["Sinopec",8.0],["PetroChina",5.0],["ExxonMobil",4.0],["BP",3.5],["TotalEnergies",3.0],["Saudi Aramco",3.0],["Chevron",2.5],["Indian Oil",2.5]]},{"name":"Schmierstoffe","basis":"Anteil am Umsatz","size":160.0,"growth":2.0,"revenue":13.0,"players":[["Shell Lubricants",8.0,1],["ExxonMobil (Mobil)",9.0],["BP (Castrol)",6.0],["TotalEnergies",5.0],["Sinopec",5.0],["Chevron",4.0],["PetroChina",3.0],["Fuchs",2.5],["Idemitsu",2.0]]},{"name":"Petrochemie","basis":"Anteil am Umsatz","size":900.0,"growth":3.0,"revenue":25.0,"players":[["Shell Chemicals",2.8,1],["Sinopec",7.0],["BASF",6.0],["Dow",4.5],["SABIC",4.0],["ExxonMobil Chemical",4.0],["LyondellBasell",4.0],["PetroChina",4.0],["Ineos",4.0],["Formosa Plastics",3.0]]}]},{"id":"db-stellantis","name":"Stellantis N.V.","hq":"Amsterdam, NL","revenue":170,"year":2025,"aliases":["stellantis","fca","fiat chrysler","psa","jeep","ram","peugeot","citroen","citroën","opel","vauxhall","fiat","chrysler","dodge","alfa romeo","maserati","ds automobiles","lancia","abarth","pro one","mopar"],"markets":[{"name":"Volumen-Pkw","basis":"Anteil am Umsatz","size":2000.0,"growth":2.0,"revenue":95.0,"players":[["Jeep",1.8,1],["Peugeot",1.2,1],["Fiat",0.6,1],["Citroën",0.5,1],["Opel/Vauxhall",0.5,1],["Chrysler & Dodge",0.3,1],["Toyota",10.0],["Volkswagen",7.0],["Hyundai-Kia",7.0],["General Motors",6.0],["Ford",5.0],["Honda",4.5],["Nissan",3.5],["BYD",3.0],["Renault",2.5],["Suzuki",2.0]]},{"name":"Premium-Pkw","basis":"Anteil am Umsatz","size":600.0,"growth":3.0,"revenue":3.0,"players":[["Alfa Romeo",0.2,1],["Maserati",0.1,1],["DS Automobiles",0.1,1],["BMW",18.0],["Mercedes-Benz",16.0],["Audi",10.0],["Tesla",9.0],["Lexus",6.0],["Porsche",6.0],["Volvo Cars",5.0],["Land Rover",4.0],["Cadillac",3.0]]},{"name":"Elektroautos","basis":"Anteil am Umsatz","size":700.0,"growth":20.0,"revenue":10.0,"players":[["Peugeot/Citroën/Opel BEV",0.9,1],["Fiat 500e & Jeep BEV",0.3,1],["BYD",20.0],["Tesla",16.0],["Geely",8.0],["Volkswagen",6.0],["SAIC-GM-Wuling",5.0],["BMW",3.0],["Hyundai-Kia",3.0],["Changan",3.0],["Leapmotor",2.0],["Xpeng",2.0]]},{"name":"Leichte Nutzfahrzeuge","basis":"Anteil am Umsatz","size":250.0,"growth":3.0,"revenue":25.0,"players":[["Stellantis Pro One",10.0,1],["Ford Pro",16.0],["Toyota",10.0],["Mercedes-Benz Vans",8.0],["General Motors",6.0],["Renault",5.0],["Volkswagen Nutzfahrzeuge",5.0],["Hyundai",2.0],["Iveco",2.0]]},{"name":"Pick-ups","basis":"Anteil am Umsatz","size":250.0,"growth":2.0,"revenue":30.0,"players":[["Ram",12.0,1],["Ford F-Serie",22.0],["GM (Silverado, Sierra)",22.0],["Toyota",12.0],["Nissan",3.0],["Isuzu",2.0],["Mitsubishi",2.0],["Great Wall",2.0]]}]},{"id":"db-walmart","name":"Walmart Inc.","hq":"Bentonville, US","revenue":700,"year":2025,"aliases":["walmart","wal-mart","sam's club","sams club","walmart.com","walmex","walmart de mexico","walmart canada","flipkart","myntra","phonepe","asda","great value","equate","onn","vizio"],"markets":[{"name":"Lebensmittelhandel USA","basis":"Anteil am Lebensmittelumsatz","size":1300.0,"growth":3.0,"revenue":290.0,"players":[["Walmart U.S.",20.0,1],["Sam's Club",2.3,1],["Kroger",9.0],["Costco",7.0],["Albertsons",6.0],["Ahold Delhaize",4.0],["Publix",4.0],["Aldi",3.0],["H-E-B",3.0],["Target",3.0],["Amazon (inkl. Whole Foods)",3.0]]},{"name":"Allgemeinwaren USA","basis":"Anteil am Umsatz","size":1000.0,"growth":2.0,"revenue":150.0,"players":[["Walmart U.S.",13.0,1],["Sam's Club",4.0,1],["Amazon",15.0],["Target",7.0],["Costco",6.0],["Best Buy",4.0],["TJX",4.0],["Dollar General",3.0],["Dollar Tree",2.0],["Kohl's",1.5]]},{"name":"Online-Handel USA","basis":"Anteil am E-Commerce-Umsatz","size":1300.0,"growth":8.0,"revenue":92.0,"players":[["Walmart.com",6.5,1],["Sam's Club online",0.6,1],["Amazon",40.0],["Apple",3.0],["eBay",3.0],["Target",2.0],["Costco",2.0],["Home Depot",2.0],["Kroger",1.5],["Temu",1.5],["Shein",1.0]]},{"name":"Lebensmittelhandel Mexiko","basis":"Anteil am Umsatz inkl. Mittelamerika","size":200.0,"growth":5.0,"revenue":50.0,"players":[["Walmart de México y Centroamérica",25.0,1],["OXXO (FEMSA)",10.0],["Chedraui",6.0],["Soriana",5.0],["Costco México",3.0],["La Comer",1.5],["H-E-B México",1.5],["Tiendas 3B",1.0],["Casa Ley",1.0]]},{"name":"Lebensmittelhandel Kanada","basis":"Anteil am Umsatz","size":110.0,"growth":3.0,"revenue":22.0,"players":[["Walmart Canada",18.0,1],["Loblaw",25.0],["Empire (Sobeys)",17.0],["Metro",11.0],["Costco Canada",11.0],["Amazon",1.5],["Save-On-Foods",3.0],["Giant Tiger",1.0]]},{"name":"Lebensmittelhandel China","basis":"Anteil am Umsatz","size":1400.0,"growth":4.0,"revenue":22.0,"players":[["Walmart China (inkl. Sam's Club)",1.6,1],["Pinduoduo",4.0],["Alibaba (Freshippo, Sun Art)",3.0],["JD.com",3.0],["Meituan",2.0],["China Resources Vanguard",2.0],["Yonghui",1.5],["Wumart",1.2]]},{"name":"Online-Handel Indien","basis":"Anteil am GMV","size":120.0,"growth":18.0,"revenue":15.0,"players":[["Flipkart",32.0,1],["Myntra",4.0,1],["Amazon India",25.0],["Meesho",8.0],["Reliance Retail (JioMart, Ajio)",6.0],["Blinkit (Eternal)",4.0],["Swiggy Instamart",3.0],["Zepto",3.0],["Tata (BigBasket)",3.0],["Nykaa",2.0]]}]},{"id":"db-mcdonalds","name":"McDonald's Corporation","hq":"Chicago, US","revenue":26,"year":2025,"aliases":["mcdonald's","mcdonalds","mcd","mccafe","mccafé","big mac","happy meal"],"markets":[{"name":"Fast Food USA","basis":"Anteil am Systemumsatz","size":420.0,"growth":3.0,"revenue":10.0,"players":[["McDonald's USA",13.0,1],["Starbucks",7.0],["Chick-fil-A",5.0],["Taco Bell",4.0],["Wendy's",3.0],["Dunkin'",3.0],["Chipotle",3.0],["Burger King",2.5],["Subway",2.5],["Domino's",2.0]]},{"name":"Fast Food Europa","basis":"Anteil am Systemumsatz","size":180.0,"growth":4.0,"revenue":10.0,"players":[["McDonald's",17.0,1],["Burger King",5.0],["KFC",4.0],["Domino's",2.5],["Subway",2.0],["Starbucks",2.0],["Greggs",1.5],["Five Guys",0.6],["Telepizza",0.5]]},{"name":"Fast Food Asien-Pazifik","basis":"Anteil am Systemumsatz","size":350.0,"growth":6.0,"revenue":5.0,"players":[["McDonald's",5.0,1],["KFC",8.0],["Mixue",3.0],["Luckin Coffee",3.0],["Starbucks",3.0],["Jollibee",2.0],["Domino's",1.5],["Burger King",1.5],["Lotteria",1.0]]}]},{"id":"db-lego","name":"The LEGO Group","hq":"Billund, DK","revenue":12,"year":2025,"aliases":["lego","lego group","lego a/s","kirkbi","lego duplo","lego technic","lego city","lego friends","lego star wars","lego ninjago","legoland"],"markets":[{"name":"Spielwaren Nordamerika","basis":"Anteil am Umsatz","size":35.0,"growth":2.0,"revenue":5.0,"players":[["LEGO",14.0,1],["Mattel",13.0],["Hasbro",9.0],["Spin Master",6.0],["MGA Entertainment",4.0],["Bandai Namco",3.0],["Jakks Pacific",2.0],["Funko",2.0],["Melissa & Doug",1.5]]},{"name":"Spielwaren Europa","basis":"Anteil am Umsatz","size":30.0,"growth":2.0,"revenue":4.5,"players":[["LEGO",15.0,1],["Mattel",6.0],["Hasbro",5.0],["Ravensburger",4.0],["Playmobil",3.0],["Spin Master",3.0],["Simba Dickie",2.5],["Bandai Namco",2.0],["Clementoni",1.5]]},{"name":"Spielwaren Asien-Pazifik","basis":"Anteil am Umsatz","size":35.0,"growth":5.0,"revenue":2.5,"players":[["LEGO",7.0,1],["Pop Mart",10.0],["Bandai Namco",9.0],["Takara Tomy",3.0],["Mattel",2.0],["Hasbro",1.5],["Keeppley",1.0],["Spin Master",1.0],["Alpha Group",1.0]]}]}];
+DATABASE.forEach(c=>c.source="db");
+const allCompanies=()=>[...BUILTIN,...DATABASE,...generated];
+
+// ---------- Analyse ----------
+function analyse(m,thr){
+  const own=m.players.filter(p=>p[2]), comp=m.players.filter(p=>!p[2]);
+  const ownShare=own.reduce((a,p)=>a+p[1],0);
+  const top=comp.reduce((a,p)=>Math.max(a,p[1]),0);
+  const rel=top>0?ownShare/top:(ownShare>0?10:0);
+  const hiG=m.growth>=thr, hiS=rel>=1;
+  const bcg=hiG&&hiS?"Star":!hiG&&hiS?"Cash Cow":hiG?"Fragezeichen":"Poor Dog";
+  return {own,comp,ownShare,rel,bcg};
+}
+
+// ---------- Blasen in der Blase (gewichtetes Voronoi, mit der Maus ziehbar) ----------
+const CATS=[["Star","--star","--on-star"],["Cash Cow","--cow","--on-cow"],["Fragezeichen","--q","--on-q"],["Poor Dog","--dog","--on-dog"]];
+const catOf=c=>CATS.find(x=>x[0]===c)||CATS[3];
+const catVar=c=>catOf(c)[1];
+// Pfeil grün nur ab Wachstumsschwelle, rot bei Schrumpfen, sonst neutral
+const arrowVar=m=>m.growth<0?"--g-neg":m.growth>=state.thr?"--up":"--muted";
+const CX=300,CY=300,R=288;
+const CLIP=d3.polygonHull(d3.range(96).map(i=>{const a=i/96*2*Math.PI;return[CX+R*Math.cos(a),CY+R*Math.sin(a)]}));
+const WV=d3.weightedVoronoi().x(d=>d.x).y(d=>d.y).weight(d=>d.w);
+const pos=new Map();
+let raf=0;
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+function marketsShown(){
+  const ms=state.company.markets.slice().sort((a,b)=>(b[state.sizeBy]||0)-(a[state.sizeBy]||0));
+  return ms.slice(0,state.top);
+}
+
+function renderLegend(sites){
+  const el=$("#legend");el.innerHTML="";
+  const total=d3.sum(sites,n=>n.v)||1;
+  CATS.forEach(([c,v])=>{
+    const sum=d3.sum(sites.filter(n=>n.a.bcg===c),n=>n.v);
+    const s=document.createElement("span");s.className="lg"+(sum?"":" off");
+    const i=document.createElement("i");i.style.background=`var(${v})`;
+    const b=document.createElement("b");b.textContent=c;
+    const t=document.createElement("span");t.className="lv";t.textContent=sum?`${fmt(sum/total*100)} % · ${fmt(sum,sum<10?1:0)} Mrd.`:"–";
+    s.title=state.sizeBy==="revenue"?"Anteil am angezeigten Konzernumsatz":"Anteil am angezeigten Marktvolumen";
+    s.append(i,b,t);el.append(s);
+  });
+  [["--comp-up",`Markt wächst ab ${fmt(state.thr)} % p.a.`,`Wachstum ≥ ${fmt(state.thr)} %`],["--comp-down",`Markt wächst unter ${fmt(state.thr)} % p.a.`,`Wachstum < ${fmt(state.thr)} %`]].forEach(([v,txt,short])=>{
+    const s=document.createElement("span");s.className="lg";
+    const i=document.createElement("i");i.style.cssText=`background:var(${v});border-radius:3px`;
+    const t=document.createElement("span");t.className="lg-t";t.textContent=txt;
+    const ts=document.createElement("span");ts.className="sm-t";ts.textContent=short;s.append(i,t,ts);el.append(s);
+  });
+}
+
+// Eine Iteration: Zellen berechnen, Gewichte an Zielflächen anpassen, Punkte Richtung Zellmitte ziehen
+function relax(sites,clip,fixed,pull){
+  let cells=[];
+  try{cells=WV.clip(clip)(sites)}catch(e){}
+  const by=new Map();cells.forEach(c=>by.set(c.site.originalObject,c));
+  let err=0,tot=0,move=0;
+  for(const s of sites){
+    const c=by.get(s)||null;s.poly=c;
+    const area=c?Math.abs(d3.polygonArea(c)):0;
+    err+=Math.abs(area-s.target);tot+=s.target;
+    if(c&&s!==fixed){const [cx,cy]=d3.polygonCentroid(c);if(isFinite(cx)&&isFinite(cy)){const dx=(cx-s.x)*pull,dy=(cy-s.y)*pull;s.x+=dx;s.y+=dy;move+=Math.abs(dx)+Math.abs(dy)}}
+    // Gewicht ~ Radius²: additiv Richtung Zielfläche
+    s.w+=0.45*(s.target-area)/Math.PI;
+  }
+  const mn=d3.min(sites,s=>s.w);sites.forEach(s=>{s.w-=mn});
+  for(let k=0;k<2;k++)for(const p of sites)for(const q of sites){
+    if(p===q)continue;const o=p.w-q.w-((p.x-q.x)**2+(p.y-q.y)**2);if(o>0)q.w+=o+1e-6;
+  }
+  return {err:tot?err/tot:0,move};
+}
+// Polygon mit abgerundeten Ecken; die Ecken bleiben frei und zeigen den Hintergrund
+function roundedPath(poly,r){
+  const n=poly.length;if(n<3)return "";
+  let d="";
+  for(let i=0;i<n;i++){
+    const p0=poly[(i-1+n)%n],p1=poly[i],p2=poly[(i+1)%n];
+    const l1=Math.hypot(p1[0]-p0[0],p1[1]-p0[1])||1,l2=Math.hypot(p2[0]-p1[0],p2[1]-p1[1])||1;
+    const t1=Math.min(r,l1/2)/l1,t2=Math.min(r,l2/2)/l2;
+    const ax=p1[0]+(p0[0]-p1[0])*t1,ay=p1[1]+(p0[1]-p1[1])*t1,bx=p1[0]+(p2[0]-p1[0])*t2,by=p1[1]+(p2[1]-p1[1])*t2;
+    d+=`${i?"L":"M"}${ax},${ay}Q${p1[0]},${p1[1]} ${bx},${by}`;
+  }
+  return d+"Z";
+}
+function keepInside(s,poly){
+  const [cx,cy]=d3.polygonCentroid(poly);
+  if(!isFinite(s.x)||!isFinite(s.y)){s.x=cx+Math.random()*4-2;s.y=cy+Math.random()*4-2;s.w=0}
+  for(let k=0;k<12&&!d3.polygonContains(poly,[s.x,s.y]);k++){s.x=cx+(s.x-cx)*0.8;s.y=cy+(s.y-cy)*0.8}
+}
+
+const LBL={FS1:18,FS2:11.5,min:10};
+// Mausrad zoomt im Breitbild direkt, sonst nur mit Strg/⌘ (damit die Seite scrollbar bleibt); auf Touch nur Knöpfe
+const zoom=d3.zoom().scaleExtent([1,6]).filter(ev=>{
+  if(ev.type==="wheel")return window.matchMedia("(min-width:1100px)").matches||ev.ctrlKey||ev.metaKey;
+  if(ev.type.startsWith("touch"))return !window.matchMedia("(max-width:900px)").matches||ev.touches.length>1||zt.k>1;
+  return (ev.button===0||ev.button===1)&&!ev.ctrlKey;
+});
+let zt=d3.zoomIdentity,tipT=0,relabel=null,relabelRaf=0;
+// Ungezoomt darf der Browser mit einem Finger scrollen; gezoomt gehören alle Gesten dem Kreis
+const setTouchAction=()=>{const el=$("#chart");if(el)el.style.touchAction=zt.k>1||!window.matchMedia("(max-width:900px)").matches?"none":"pan-x pan-y"};
+const narrowScreen=()=>window.matchMedia("(max-width:900px)").matches;
+function renderChart(){
+  cancelAnimationFrame(raf);raf=0;
+  const svg=d3.select("#chart");svg.selectAll("*").remove();
+  // Kleine Bildschirme: Beschriftung in Bildschirm-Pixeln lesbar halten, Rand um den Kreis entsprechend weiten
+  const sc=(svg.node().clientWidth||600)/696;
+  LBL.FS1=Math.max(18,12/sc);LBL.FS2=Math.max(11.5,9.5/sc);LBL.min=Math.max(10,9/sc);
+  const pad=Math.ceil(20+LBL.FS2*0.75+5+LBL.FS1*0.8);
+  svg.attr("viewBox",`${CX-R-pad} ${CY-R-pad} ${2*(R+pad)} ${2*(R+pad)}`);
+  const ms=marketsShown();
+  const raw=ms.map(m=>Math.max(m[state.sizeBy]||0,0));
+  const total=d3.sum(raw)||1, floor=total*0.035;
+  const disp=raw.map(v=>Math.max(v,floor)), dsum=d3.sum(disp);
+  const AREA=Math.abs(d3.polygonArea(CLIP));
+  const rnd=mulberry(11);
+
+  const sites=ms.map((m,i)=>{
+    const prev=pos.get(state.company.name+"|"+m.name), a=analyse(m,state.thr);
+    const ang=rnd()*2*Math.PI, rr=R*0.55*Math.sqrt(rnd());
+    const s={m,a,v:raw[i],target:disp[i]/dsum*AREA,
+      x:prev?prev.x:CX+rr*Math.cos(ang),y:prev?prev.y:CY+rr*Math.sin(ang),w:prev?prev.w:0};
+    s.px=s.x;s.py=s.y;
+    const used=m.players.reduce((t,p)=>t+p[1],0);
+    const list=m.players.map((p,j)=>({name:p[0],share:p[1],own:!!p[2],rank:j}));
+    if(used<99.5)list.push({name:"Sonstige",share:100-used,own:false,other:true,rank:99});
+    s.players=list.filter(p=>p.share>0).map(p=>{
+      const pp=prev&&prev.pl[p.name];
+      const an=rnd()*2*Math.PI, r2=20*Math.sqrt(rnd())+2;
+      return Object.assign(p,{key:m.name+"|"+p.name,parent:s,frac:p.share/100,target:1,
+        x:pp?s.x+pp.dx:s.x+r2*Math.cos(an),y:pp?s.y+pp.dy:s.y+r2*Math.sin(an),w:pp?pp.w:0});
+    });
+    return s;
+  });
+  renderLegend(sites);
+  const st={sites,drag:null,dragP:null};
+
+  function step(){
+    for(const s of sites){const dx=s.x-s.px,dy=s.y-s.py;if(dx||dy)s.players.forEach(p=>{p.x+=dx;p.y+=dy});}
+    // Gezogenes Produkt folgt der Maus; zieht man über den Rand, wird der ganze Markt mitgezogen
+    const dp=st.dragP;
+    if(dp){
+      dp.x=dp.tx;dp.y=dp.ty;const s=dp.parent;
+      if(s.poly&&!d3.polygonContains(s.poly,[dp.x,dp.y])){
+        keepInside(dp,s.poly);
+        s.x+=(dp.tx-dp.x)*0.12;s.y+=(dp.ty-dp.y)*0.12;
+        const ddx=s.x-CX,ddy=s.y-CY,dist=Math.hypot(ddx,ddy),lim=R-18;
+        if(dist>lim){s.x=CX+ddx*lim/dist;s.y=CY+ddy*lim/dist}
+      }
+    }
+    const r=relax(sites,CLIP,st.drag,0.22);
+    for(const s of sites){if(s!==st.drag)keepInside(s,CLIP);s.px=s.x;s.py=s.y}
+    for(const s of sites){
+      if(!s.poly)continue;
+      const area=Math.abs(d3.polygonArea(s.poly));
+      s.players.forEach(p=>{p.target=p.frac*area;keepInside(p,s.poly)});
+      const ri=relax(s.players,s.poly,dp&&dp.parent===s?dp:null,0.3);
+      r.err+=ri.err*0.2;r.move+=ri.move*0.3;
+    }
+    return r;
+  }
+  function savePos(){
+    sites.forEach(s=>{const pl={};s.players.forEach(p=>pl[p.name]={dx:p.x-s.x,dy:p.y-s.y,w:p.w});pos.set(state.company.name+"|"+s.m.name,{x:s.x,y:s.y,w:s.w,pl})});
+  }
+  for(let i=0;i<((ms[0]&&pos.has(state.company.name+"|"+ms[0].name))?40:260);i++)step();
+
+  // Zoom-Ebene: alles Gezeichnete liegt in einer Gruppe, die Mausrad, Knöpfe und Fingergesten skalieren
+  const zl=svg.append("g").attr("class","zl");
+  zl.append("circle").attr("class","ring").attr("cx",CX).attr("cy",CY).attr("r",R+6);
+  const gLeaf=zl.append("g"), gMkt=zl.append("g"), gLbl=zl.append("g");
+  const vb=svg.node().viewBox.baseVal;
+  zoom.extent([[vb.x,vb.y],[vb.x+vb.width,vb.y+vb.height]]).translateExtent([[vb.x,vb.y],[vb.x+vb.width,vb.y+vb.height]])
+    .on("zoom",ev=>{zt=ev.transform;zl.attr("transform",zt);if(!relabelRaf)relabelRaf=requestAnimationFrame(()=>{relabelRaf=0;relabel&&relabel()});$("#zoomReset").textContent=Math.round(zt.k*100)+" %";setTouchAction()});
+  svg.call(zoom).on("dblclick.zoom",null);
+  // Zoomzustand übernehmen, ohne einen laufenden Zoom abzubrechen
+  svg.property("__zoom",zt);zl.attr("transform",zt);$("#zoomReset").textContent=Math.round(zt.k*100)+" %";setTouchAction();
+  const tip=$("#tip"), stage=$(".stage");
+
+  const dragFilter=ev=>!ev.button&&!(ev.type==='touchstart'&&narrowScreen());
+  const mDrag=d3.drag().container(zl.node()).filter(dragFilter)
+    .on("start",(ev,m)=>{st.drag=m;m.ox=ev.x-m.x;m.oy=ev.y-m.y;tip.hidden=true;wake()})
+    .on("drag",(ev,m)=>{
+      let x=ev.x-m.ox,y=ev.y-m.oy;
+      const dx=x-CX,dy=y-CY,dist=Math.hypot(dx,dy),lim=R-18;
+      if(dist>lim){x=CX+dx*lim/dist;y=CY+dy*lim/dist}
+      m.x=x;m.y=y;wake();
+    })
+    .on("end",()=>{st.drag=null;wake()});
+  const pDrag=d3.drag().container(zl.node()).filter(dragFilter)
+    .on("start",(ev,p)=>{st.dragP=p;p.ox=ev.x-p.x;p.oy=ev.y-p.y;p.tx=p.x;p.ty=p.y;tip.hidden=true;wake()})
+    .on("drag",(ev,p)=>{p.tx=ev.x-p.ox;p.ty=ev.y-p.oy;wake()})
+    .on("end",()=>{st.dragP=null;wake()});
+
+  function draw(){
+    const leaves=[];sites.forEach(s=>s.poly&&s.players.forEach(p=>p.poly&&leaves.push(p)));
+    relabel=()=>drawLabels(gLbl,sites,leaves,mDrag);
+    gLeaf.selectAll("path").data(leaves,d=>d.key).join(en=>en.append("path").attr("class","leaf")
+        .style("fill",d=>d.own?`var(${catOf(d.parent.a.bcg)[1]})`:d.parent.m.growth>=state.thr?"var(--comp-up)":"var(--comp-down)")
+        .style("fill-opacity",d=>d.own?1:d.other?0.28:Math.max(0.5,0.95-d.rank*0.08))
+        .call(pDrag)
+        .on("mousemove",(ev,d)=>{if(!st.drag&&!st.dragP)showTip(ev,d)})
+        .on("mouseleave",()=>tip.hidden=true)
+        .on("click",(ev,d)=>{
+          if(ev.defaultPrevented)return;
+          // Touch: Antippen zeigt die Details kurz an
+          if(window.matchMedia("(hover:none)").matches){showTip(ev,d);clearTimeout(tipT);tipT=setTimeout(()=>tip.hidden=true,3000)}
+          select(d.parent.m.name);
+        }))
+      .attr("d",d=>roundedPath(d.poly,11));
+    gMkt.selectAll("path").data(sites.filter(s=>s.poly),d=>d.m.name).join("path")
+      .attr("class",d=>"mkt"+(state.sel===d.m.name?" sel":"")).attr("d",d=>roundedPath(d.poly,16));
+    drawLabels(gLbl,sites,leaves,mDrag);
+  }
+  function showTip(ev,d){
+    const r=stage.getBoundingClientRect();tip.hidden=false;tip.innerHTML="";
+    const add=(t,b)=>{const e=document.createElement(b?"b":"span");e.textContent=t;tip.append(e,document.createElement("br"))};
+    add(d.name,true);
+    add(`${fmt(d.share,1)} % in ${d.parent.m.name}`);
+    add(`${d.parent.a.bcg} · Markt ${d.parent.m.growth>=0?"+":""}${fmt(d.parent.m.growth,1)} % p.a.`);
+    let x=ev.clientX-r.left+14,y=ev.clientY-r.top+14;if(x+250>r.width)x-=270;
+    tip.style.left=x+"px";tip.style.top=y+"px";
+  }
+
+  let frames=0;
+  function frame(){
+    raf=0;
+    let r=step();if(st.drag)r=step();
+    draw();savePos();
+    frames++;
+    if(st.drag||st.dragP||((r.move>0.05||r.err>0.01)&&frames<500))raf=requestAnimationFrame(frame);
+  }
+  function wake(){frames=0;if(!raf)raf=requestAnimationFrame(frame)}
+  draw();savePos();
+}
+
+function drawLabels(g,sites,leaves,mDrag){
+  g.selectAll("*").remove();
+  const placed=[];
+  const fits=r=>!placed.some(p=>r.x<p.x+p.w&&r.x+r.w>p.x&&r.y<p.y+p.h&&r.y+r.h>p.y);
+  // Marktlabels als Bogenschrift außen am Kreis
+  const FS1=LBL.FS1,FS2=LBL.FS2,RM=R+12+FS2+FS1*0.5;
+  const items=[];
+  for(const s of sites){
+    if(!s.poly)continue;
+    const [cx,cy]=d3.polygonCentroid(s.poly), m=s.m;
+    const gr=`${m.growth>=0?"▲ +":"▼ "}${fmt(m.growth,0)} %`;
+    const l2=`${s.a.bcg.toUpperCase()} · ${gr} p.a.`;
+    const span=Math.max(m.name.length*FS1*0.55/(R+12+FS2+FS1*0.4),l2.length*FS2*0.62/(R+12));
+    const ang=Math.atan2(cy-CY,cx-CX), edge=s.poly.some(q=>Math.hypot(q[0]-CX,q[1]-CY)>R-2);
+    items.push({s,cx,cy,gr,ang,ang0:ang,edge,span:span+0.07});
+  }
+  // Winkel auseinanderschieben, bis sich die Bögen nicht mehr überlappen
+  items.sort((a,b)=>a.ang-b.ang);
+  for(let it=0;it<60&&items.length>1;it++){
+    let moved=false;
+    for(let i=0;i<items.length;i++){
+      const A=items[i],B=items[(i+1)%items.length];
+      let gap=B.ang-A.ang;if(i===items.length-1)gap+=2*Math.PI;
+      const need=(A.span+B.span)/2;
+      if(gap<need){const d=(need-gap)/2+0.002;A.ang-=d;B.ang+=d;moved=true}
+    }
+    if(!moved)break;
+  }
+  const defs=g.append("defs");
+  items.forEach((L,i)=>{
+    const s=L.s,m=s.m,cat=catOf(s.a.bcg),a=L.ang,half=Math.min(Math.PI*0.95,L.span/2+0.35);
+    const bottom=Math.sin(a)>0.05;
+    // Unten läuft der Bogen gegen den Uhrzeigersinn, damit die Schrift lesbar bleibt
+    const arc=(r)=>{
+      const a0=bottom?a+half:a-half,a1=bottom?a-half:a+half;
+      return `M${CX+r*Math.cos(a0)},${CY+r*Math.sin(a0)}A${r},${r} 0 ${half>Math.PI/2?1:0} ${bottom?0:1} ${CX+r*Math.cos(a1)},${CY+r*Math.sin(a1)}`;
+    };
+    // Innen Kategorie und Wachstum, außen der Marktname
+    const rIn=bottom?R+12+FS2*0.75:R+12, rOut=bottom?rIn+5+FS1*0.75:rIn+FS2*0.75+5;
+    const id1="arc"+i+"a",id2="arc"+i+"b";
+    defs.append("path").attr("id",id1).attr("d",arc(rOut));
+    defs.append("path").attr("id",id2).attr("d",arc(rIn));
+    let da=Math.abs(a-L.ang0)%(2*Math.PI);if(da>Math.PI)da=2*Math.PI-da;
+    if(!L.edge||da>0.3){
+      g.append("path").attr("class","leader").attr("d",`M${L.cx},${L.cy}L${CX+(R-1)*Math.cos(a)},${CY+(R-1)*Math.sin(a)}L${CX+(R+8)*Math.cos(a)},${CY+(R+8)*Math.sin(a)}`);
+      g.append("circle").attr("class","leader-dot").attr("cx",L.cx).attr("cy",L.cy).attr("r",3.5);
+    }
+    const gg=g.append("g").attr("class","mlbl"+(state.sel===m.name?" sel":"")).datum(s).call(mDrag).on("click",ev=>{if(!ev.defaultPrevented)select(m.name)});
+    const tName=gg.append("text").attr("class","mname").attr("font-size",FS1);
+    tName.append("textPath").attr("href","#"+id1).attr("startOffset","50%").attr("text-anchor","middle").text(m.name.toUpperCase());
+    const t2=gg.append("text").attr("class","mgr").attr("font-size",FS2);
+    const tp=t2.append("textPath").attr("href","#"+id2).attr("startOffset","50%").attr("text-anchor","middle");
+    tp.append("tspan").style("fill",`var(${cat[1]})`).style("font-weight",700).text(s.a.bcg.toUpperCase()+" · ");
+    tp.append("tspan").style("fill",`var(${arrowVar(m)})`).text(L.gr.slice(0,1));
+    tp.append("tspan").text(L.gr.slice(1)+" p.a.");
+  });
+  const ordered=leaves.slice().sort((a,b)=>(b.own-a.own)||(Math.abs(d3.polygonArea(b.poly))-Math.abs(d3.polygonArea(a.poly))));
+  for(const d of ordered){
+    if(d.other)continue;
+    const area=Math.abs(d3.polygonArea(d.poly));
+    const k=zt.k,sa=area*k*k; // sichtbare Fläche nach Zoom
+    if(!d.own&&sa<2600)continue;
+    const fs=(d.own?Math.max(LBL.min,Math.min(26,Math.sqrt(sa)/6)):Math.max(LBL.min*0.9,Math.min(13,Math.sqrt(sa)/9)))/k;
+    const [cx,cy]=d3.polygonCentroid(d.poly);
+    const pct=fmt(d.share,d.share<10?1:0)+" %";
+    const fill=d.own?`var(${catOf(d.parent.a.bcg)[2]})`:"var(--on-comp)";
+    let done=false;
+    for(const sc of [1,0.8,0.62]){
+      if(done)break;
+      const f=fs*sc,two=d.own&&sa>1400*sc;
+      const ctext=sa>7000?`${d.name} ${pct}`:d.name;
+      // Breite nach dem tatsächlich angezeigten Text schätzen, damit Wettbewerber-Labels nicht überlappen
+      const w=(d.own?Math.max(pct.length*f*0.6,two?d.name.length*f*0.33:0):ctext.length*f*0.55)+6,h=two?f*1.75:f*1.1;
+      for(const dy of [0,h*0.9,-h*0.9,h*1.8,-h*1.8]){
+        const y=cy+dy,box={x:cx-w/2,y:y-h/2,w,h};
+        if(!d3.polygonContains(d.poly,[cx,y])||!d3.polygonContains(d.poly,[box.x+2,y])||!d3.polygonContains(d.poly,[box.x+w-2,y]))continue;
+        if(!fits(box))continue;
+        placed.push(box);
+        const t=g.append("text").attr("class","lbl").attr("text-anchor","middle").style("fill",fill);
+        if(d.own){
+          t.append("tspan").attr("x",cx).attr("y",two?y-f*0.05:y+f*0.36).attr("font-size",f).text(pct);
+          if(two)t.append("tspan").attr("x",cx).attr("y",y+f*0.72).attr("font-size",f*0.5).attr("font-weight",600).text(d.name);
+        }else t.append("tspan").attr("x",cx).attr("y",y+f*0.36).attr("font-size",f).attr("font-weight",600).text(ctext);
+        done=true;break;
+      }
+    }
+  }
+}
+
+// ---------- Tabelle ----------
+function renderTable(){
+  const tb=$("#tbody");tb.innerHTML="";
+  const shown=new Set(marketsShown().map(m=>m.name));
+  state.company.markets.slice().sort((a,b)=>(b[state.sizeBy]||0)-(a[state.sizeBy]||0)).forEach(m=>{
+    const a=analyse(m,state.thr);
+    const tr=document.createElement("tr");tr.className="row"+(state.sel===m.name?" sel":"");
+    if(!shown.has(m.name))tr.style.opacity=.5;
+    const c=(t,cls)=>{const td=document.createElement("td");if(cls)td.className=cls;td.textContent=t;tr.append(td);return td};
+    const td0=c("");const b=document.createElement("b");b.textContent=m.name;td0.append(b);
+    // Volumen steht zusätzlich unter dem Markt, sichtbar sobald die Volumen-Spalte aus Platzgründen ausgeblendet ist
+    const sv=document.createElement("small");sv.className="vol-inline";sv.textContent=`Volumen ${fmt(m.size,m.size<10?1:0)}`;td0.append(sv);
+    const sr=document.createElement("small");sr.className="rma-inline";sr.textContent=`rel. MA ${fmt(analyse(m,state.thr).rel,2)}`;
+    const sm=document.createElement("small");sm.style.cssText="display:block;color:var(--muted)";sm.textContent=`Umsatz ${fmt(m.revenue,m.revenue<10?1:0)}`;sm.title=m.basis||"";td0.append(sm,sr);
+    c(fmt(m.size,m.size<10?1:0),"n vol");
+    const g=c(`${m.growth>=0?"▲ +":"▼ "}${fmt(m.growth,0)} %`,"n gr");g.style.color=`var(${arrowVar(m)})`;
+    const td3=c("","own");td3.textContent=fmt(a.ownShare,a.ownShare<10?1:0)+" %";
+    if(m.basis){const s2=document.createElement("small");s2.textContent=m.basis;td3.append(s2)}
+    c(fmt(a.rel,2),"n rma");
+    const td5=c("","bcgc");const ch=document.createElement("span");ch.className="chip "+a.bcg.replace(/\s/g,"");ch.textContent=a.bcg;td5.append(ch);
+    const bi=ch.cloneNode(true);bi.classList.add("bcg-inline");td0.append(bi);
+    tr.onclick=()=>select(m.name);
+    tb.append(tr);
+    // Unterpunkte: jedes eigene Produkt mit seinem Marktanteil, Punkt in der Farbe der BCG-Kategorie
+    const own=a.own.slice().sort((x,y)=>y[1]-x[1]);
+    if(own.length)tr.classList.add("has-sub");
+    own.forEach((p,i)=>{
+      const st=document.createElement("tr");st.className="sub"+(i===own.length-1?" last":"")+(state.sel===m.name?" sel":"");
+      if(!shown.has(m.name))st.style.opacity=.5;
+      const cell=(t,cls)=>{const td=document.createElement("td");if(cls)td.className=cls;td.textContent=t;st.append(td);return td};
+      const n=cell("","sub-name");
+      const dot=document.createElement("i");dot.style.background=`var(${catVar(a.bcg)})`;
+      const nm=document.createElement("span");nm.textContent=p[0];n.append(dot,nm);
+      cell("","n vol");cell("");
+      cell(fmt(p[1],p[1]<10?1:0)+" %","n sub-share");
+      cell("","n rma");cell("","bcgc");
+      st.onclick=()=>select(m.name);
+      tb.append(st);
+    });
+  });
+}
+
+// ---------- BCG-Matrix ----------
+function renderBCG(){
+  const svg=d3.select("#bcg");svg.selectAll("*").remove();
+  const el=$("#bcg"),H=250,M={l:56,r:14,t:10,b:34};
+  let W=420;
+  // Breitbild: Matrix nutzt die volle Kartenbreite bei begrenzter Höhe, die Tabelle bekommt den Rest
+  if(window.matchMedia("(min-width:1100px)").matches&&el.clientWidth){
+    const hpx=Math.max(170,Math.min(360,$("#board").clientHeight*0.34,el.clientWidth*0.6));
+    W=Math.max(420,H*el.clientWidth/hpx);el.style.height=hpx+"px";
+  }else el.style.height="";
+  el.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const ms=state.company.markets.map(m=>({m,a:analyse(m,state.thr)}));
+  const r=d3.scaleSqrt().domain([0,d3.max(ms,d=>d.m.revenue)||1]).range([3,26]);
+  const rmax=d3.max(ms,d=>r(d.m.revenue))||10;
+  // Achsen an die äußersten Blasen anpassen: Datenbereich (inkl. Trennlinien) plus Blasenradius als Rand
+  const rels=ms.map(d=>Math.min(Math.max(d.a.rel,0.01),100));
+  const rx=[Math.min(1,d3.min(rels)),Math.max(1,d3.max(rels))];
+  const gy=[Math.min(state.thr,d3.min(ms,d=>d.m.growth)),Math.max(state.thr,d3.max(ms,d=>d.m.growth))];
+  if(gy[1]-gy[0]<4){gy[0]-=2;gy[1]+=2}
+  const x0=d3.scaleLog().domain([rx[0]/1.15,rx[1]*1.15]).range([M.l+rmax+2,W-M.r-rmax-2]); // hoher Anteil rechts
+  const y0=d3.scaleLinear().domain(gy).range([H-M.b-rmax-2,M.t+rmax+16]);
+  const x=d3.scaleLog().domain([x0.invert(M.l),x0.invert(W-M.r)]).range([M.l,W-M.r]);
+  const y=d3.scaleLinear().domain([y0.invert(H-M.b),y0.invert(M.t)]).range([H-M.b,M.t]);
+  const [xa,xb]=x.domain();
+  const xt=[0.01,0.02,0.05,0.1,0.25,0.5,1,2,5,10,20,50,100].filter(v=>v>=xa&&v<=xb);
+  svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-M.b})`).call(d3.axisBottom(x).tickValues(xt).tickFormat(d=>fmt(d,d<1?2:0)).tickSizeOuter(0));
+  svg.append("g").attr("class","axis").attr("transform",`translate(${M.l},0)`).call(d3.axisLeft(y).ticks(6).tickFormat(d=>d+" %").tickSizeOuter(0));
+  svg.append("line").attr("class","div").attr("x1",x(1)).attr("x2",x(1)).attr("y1",M.t).attr("y2",H-M.b);
+  svg.append("line").attr("class","div").attr("x1",M.l).attr("x2",W-M.r).attr("y1",y(state.thr)).attr("y2",y(state.thr));
+  const q=[["Fragezeichen",M.l+6,M.t+12,"start","--q"],["Star",W-M.r-6,M.t+12,"end","--star"],["Poor Dog",M.l+6,H-M.b-8,"start","--dog"],["Cash Cow",W-M.r-6,H-M.b-8,"end","--cow"]];
+  q.forEach(([t,xx,yy,an,c])=>svg.append("text").attr("class","q").attr("x",xx).attr("y",yy).attr("text-anchor",an).style("fill",`var(${c})`).text(t));
+  svg.append("text").attr("x",(M.l+W-M.r)/2).attr("y",H-4).attr("text-anchor","middle").text("relativer Marktanteil (log)");
+  svg.append("text").attr("transform",`translate(11,${(M.t+H-M.b)/2}) rotate(-90)`).attr("text-anchor","middle").text("Marktwachstum (% p.a.)");
+  const g=svg.append("g"), gl=svg.append("g"), nodes=[];
+  ms.sort((a,b)=>b.m.revenue-a.m.revenue).forEach(({m,a})=>{
+    const cx=x(Math.min(Math.max(a.rel,0.01),100)),cy=y(m.growth);
+    g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",r(m.revenue))
+      .style("fill",`var(${catVar(a.bcg)})`).style("fill-opacity",state.sel===m.name?1:.7)
+      .style("stroke",state.sel===m.name?"var(--ink)":"var(--surface)").style("stroke-width",state.sel===m.name?2.5:1.5).style("cursor","pointer")
+      .on("click",()=>select(m.name)).append("title").text(`${m.name}: rel. MA ${fmt(a.rel,2)}, Wachstum ${fmt(m.growth,0)} %`);
+    nodes.push({m,cx,cy,rr:r(m.revenue)});
+  });
+  // Beschriftungen ohne Überlappung: Kandidatenpositionen rund um die Blase, die mit den wenigsten Kollisionen gewinnt
+  const ov=(a,b)=>Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
+  const bubbles=nodes.map(n=>({n,x:n.cx-n.rr,y:n.cy-n.rr,w:2*n.rr,h:2*n.rr}));
+  const placed=[];
+  svg.selectAll("text.q").each(function(){try{const b=this.getBBox();placed.push({x:b.x-2,y:b.y-1,w:b.width+4,h:b.height+2})}catch(e){}});
+  nodes.forEach(n=>{
+    const t=gl.append("text").style("fill","var(--ink)").text(n.m.name);
+    let w=n.m.name.length*6,h=13;
+    try{const bb=t.node().getBBox();if(bb.width){w=bb.width;h=bb.height}}catch(e){}
+    const d=n.rr+3, k=d*0.72;
+    const cands=[[0,-d-h*0.25,"middle"],[d+2,h*0.32,"start"],[-d-2,h*0.32,"end"],[0,d+h*0.75,"middle"],
+      [k,-k-1,"start"],[-k,-k-1,"end"],[k,k+h*0.7,"start"],[-k,k+h*0.7,"end"]];
+    let best=null;
+    for(const [dx,dy,an] of cands){
+      const tx=n.cx+dx,ty=n.cy+dy;
+      const box={x:an==="middle"?tx-w/2:an==="start"?tx:tx-w,y:ty-h*0.78,w,h};
+      let cost=0;
+      placed.forEach(p=>cost+=ov(box,p)*4);
+      bubbles.forEach(b=>{if(b.n!==n)cost+=ov(box,b)});
+      if(box.x<M.l-2||box.x+box.w>W-2||box.y<0||box.y+box.h>H-M.b)cost+=5000;
+      if(!best||cost<best.cost)best={cost,tx,ty,an,box};
+      if(cost===0)break;
+    }
+    t.attr("x",best.tx).attr("y",best.ty).attr("text-anchor",best.an);
+    placed.push(best.box);
+  });
+  svg.selectAll("text.q").raise();
+}
+
+function renderHead(){
+  const c=state.company;
+  $("#coName").textContent=c.name;
+  $("#coMeta").textContent=[c.hq,c.revenue?`Umsatz ≈ ${fmt(c.revenue)} Mrd. USD`:null,c.year?`GJ ${c.year}`:null].filter(Boolean).join(" · ");
+  const b=$("#coBadge");
+  b.className="badge"+(c.source==="claude"?" ai":"");
+  b.textContent=c.source==="claude"?"Von Claude geschätzt – bitte prüfen":c.source==="db"?"Datenbank · Schätzwerte 2025":"Eingebaute Schätzwerte 2025";
+  $("#regen").hidden=!sample;
+}
+function renderAll(){renderHead();renderChart();renderTable();fitLayout();renderBCG()}
+function select(name){state.sel=state.sel===name?null:name;renderChart();renderTable();renderBCG()}
+function show(c){state.company=c;state.sel=null;closeSugg();$("#q").value="";renderAll()}
+function msg(t,kind){const m=$("#msg");m.hidden=!t;m.textContent=t||"";m.dataset.kind=kind||""}
+
+// ---------- Verzeichnis großer Konzerne (nur Namen und Marken; Marktdaten schätzt Claude bei Auswahl) ----------
+const DIRECTORY=`Robert Bosch|bosch,bsh,siemens hausgeräte,neff,gaggenau,bosch power tools|Gerlingen, DE
+Siemens|siemens healthineers,siemens mobility|München, DE
+Siemens Energy|siemens gamesa|München, DE
+BASF|wintershall|Ludwigshafen, DE
+Bayer|aspirin,monsanto,roundup|Leverkusen, DE
+BMW Group|bmw,mini,rolls-royce motor cars|München, DE
+Mercedes-Benz Group|mercedes,mercedes-benz,amg,maybach,smart|Stuttgart, DE
+Daimler Truck|freightliner,fuso,western star|Leinfelden-Echterdingen, DE
+Allianz|allianz global investors,pimco|München, DE
+Deutsche Telekom|telekom,t-mobile,t-systems,magenta|Bonn, DE
+Adidas|adidas originals|Herzogenaurach, DE
+Puma|puma|Herzogenaurach, DE
+Henkel|persil,schwarzkopf,pritt,loctite,pattex,syoss|Düsseldorf, DE
+Continental|conti|Hannover, DE
+ZF Friedrichshafen|zf,wabco|Friedrichshafen, DE
+Schaeffler|ina,fag,vitesco|Herzogenaurach, DE
+Merck KGaA|merck darmstadt,millipore|Darmstadt, DE
+Fresenius|fresenius kabi,helios,fresenius medical care|Bad Homburg, DE
+Infineon|infineon|Neubiberg, DE
+Lufthansa Group|lufthansa,swiss,austrian airlines,eurowings|Köln, DE
+DHL Group|dhl,deutsche post|Bonn, DE
+Beiersdorf|nivea,eucerin,tesa,la prairie|Hamburg, DE
+Kärcher|kaercher|Winnenden, DE
+Miele|miele|Gütersloh, DE
+Stihl|stihl|Waiblingen, DE
+Würth|wuerth|Künzelsau, DE
+Trumpf|trumpf|Ditzingen, DE
+Liebherr|liebherr|Bulle, CH
+Haribo|haribo|Grafschaft, DE
+Dr. Oetker|oetker,radeberger|Bielefeld, DE
+Schwarz Gruppe|lidl,kaufland,prezero|Neckarsulm, DE
+Aldi|aldi süd,aldi nord,trader joes|Essen/Mülheim, DE
+Otto Group|otto,about you,bonprix|Hamburg, DE
+Zalando|zalando|Berlin, DE
+Rheinmetall|rheinmetall|Düsseldorf, DE
+Airbus|airbus,eurocopter|Leiden, NL
+Thyssenkrupp|thyssen,krupp,tk elevator|Essen, DE
+E.ON|eon|Essen, DE
+RWE|rwe|Essen, DE
+Bertelsmann|rtl,penguin random house,arvato|Gütersloh, DE
+Hugo Boss|boss,hugo|Metzingen, DE
+Porsche AG|porsche|Stuttgart, DE
+Heidelberg Materials|heidelbergcement|Heidelberg, DE
+Covestro|covestro|Leverkusen, DE
+Deutsche Bank|postbank,dws|Frankfurt, DE
+Toyota|lexus,daihatsu,hino|Toyota City, JP
+Samsung Electronics|samsung,galaxy|Suwon, KR
+Sony Group|sony,playstation,sony music,sony pictures|Tokio, JP
+Nintendo|switch,pokemon|Kyoto, JP
+Panasonic|technics|Osaka, JP
+Hitachi|hitachi|Tokio, JP
+LG Electronics|lg|Seoul, KR
+Hyundai Motor Group|hyundai,kia,genesis|Seoul, KR
+Honda|acura|Tokio, JP
+Nissan|infiniti|Yokohama, JP
+Canon|canon|Tokio, JP
+Tencent|wechat,qq,riot games,supercell|Shenzhen, CN
+Alibaba Group|alibaba,taobao,tmall,aliexpress,alipay|Hangzhou, CN
+ByteDance|tiktok,douyin,capcut|Peking, CN
+Baidu|ernie|Peking, CN
+Xiaomi|redmi,poco|Peking, CN
+Huawei|honor|Shenzhen, CN
+BYD|denza|Shenzhen, CN
+Geely|volvo cars,polestar,zeekr,lotus|Hangzhou, CN
+Lenovo|thinkpad,motorola|Peking, CN
+TSMC|tsmc|Hsinchu, TW
+Tesla|model y,powerwall|Austin, USA
+Nvidia|geforce,cuda|Santa Clara, USA
+Intel|mobileye|Santa Clara, USA
+AMD|radeon,ryzen,xilinx|Santa Clara, USA
+Qualcomm|snapdragon|San Diego, USA
+Broadcom|vmware|Palo Alto, USA
+ASML|asml|Veldhoven, NL
+Cisco|webex|San Jose, USA
+Oracle|java,netsuite|Austin, USA
+IBM|red hat|Armonk, USA
+Salesforce|slack,tableau|San Francisco, USA
+Adobe|photoshop,acrobat|San Jose, USA
+Netflix|netflix|Los Gatos, USA
+Walt Disney|disney,pixar,marvel,star wars,espn,hulu,disney+|Burbank, USA
+Comcast|nbc,universal,sky,peacock|Philadelphia, USA
+Warner Bros. Discovery|hbo,max,cnn,warner bros,discovery|New York, USA
+Spotify|spotify|Stockholm, SE
+Uber|uber eats|San Francisco, USA
+Airbnb|airbnb|San Francisco, USA
+Booking Holdings|booking.com,kayak,priceline,opentable|Norwalk, USA
+PayPal|venmo|San Jose, USA
+Visa|visa|San Francisco, USA
+Mastercard|maestro|Purchase, USA
+Coca-Cola Company|coca-cola,coke,fanta,sprite,powerade|Atlanta, USA
+PepsiCo|pepsi,lays,doritos,gatorade,quaker|Purchase, USA
+Unilever|dove,knorr,ben & jerrys,axe,rexona,langnese|London, UK
+Procter & Gamble|p&g,pampers,gillette,ariel,oral-b,braun|Cincinnati, USA
+L'Oréal|loreal,garnier,maybelline,lancome,kiehls|Clichy, FR
+LVMH|louis vuitton,dior,moet,hennessy,sephora,tiffany|Paris, FR
+Kering|gucci,saint laurent,balenciaga,bottega veneta|Paris, FR
+Hermès|hermes|Paris, FR
+Richemont|cartier,montblanc,iwc|Genf, CH
+Nike|jordan,converse|Beaverton, USA
+Inditex|zara,massimo dutti,pull&bear,bershka|Arteixo, ES
+H&M Group|h&m,cos,weekday,arket|Stockholm, SE
+AB InBev|budweiser,becks,corona,stella artois,franziskaner|Leuven, BE
+Heineken|amstel,desperados|Amsterdam, NL
+Diageo|johnnie walker,guinness,smirnoff,baileys|London, UK
+Mondelez|milka,oreo,toblerone,philadelphia,cadbury|Chicago, USA
+Mars|m&ms,snickers,twix,pedigree,whiskas,royal canin|McLean, USA
+Ferrero|nutella,kinder,duplo,tic tac,raffaello|Luxemburg, LU
+Danone|activia,evian,volvic,alpro,aptamil|Paris, FR
+Kraft Heinz|heinz,kraft,oscar mayer|Pittsburgh, USA
+Red Bull|red bull|Fuschl am See, AT
+Walmart|sams club,asda|Bentonville, USA
+Costco|kirkland|Issaquah, USA
+IKEA (Ingka)|ikea|Leiden, NL
+McDonald's|mcdonalds|Chicago, USA
+Starbucks|starbucks|Seattle, USA
+Yum! Brands|kfc,pizza hut,taco bell|Louisville, USA
+Johnson & Johnson|j&j,janssen|New Brunswick, USA
+Kenvue|neutrogena,listerine,penaten|Summit, USA
+Pfizer|pfizer|New York, USA
+Roche|genentech|Basel, CH
+Novartis|sandoz|Basel, CH
+Novo Nordisk|ozempic,wegovy|Bagsværd, DK
+Philips|sonicare|Amsterdam, NL
+GE Aerospace|general electric,ge|Evendale, USA
+Boeing|boeing|Arlington, USA
+Lockheed Martin|lockheed|Bethesda, USA
+Caterpillar|cat|Irving, USA
+Deere & Company|john deere|Moline, USA
+3M|post-it,scotch|Saint Paul, USA
+Honeywell|honeywell|Charlotte, USA
+ABB|abb|Zürich, CH
+Schneider Electric|schneider,apc|Rueil-Malmaison, FR
+Shell|shell|London, UK
+BP|aral,castrol|London, UK
+ExxonMobil|exxon,mobil,esso|Spring, USA
+TotalEnergies|total|Paris, FR
+Stellantis|fiat,peugeot,opel,citroen,jeep,chrysler,alfa romeo|Amsterdam, NL
+Renault Group|renault,dacia,alpine|Boulogne-Billancourt, FR
+Ford Motor|ford,lincoln|Dearborn, USA
+General Motors|gm,chevrolet,cadillac,gmc,buick|Detroit, USA
+Michelin|michelin|Clermont-Ferrand, FR
+Bridgestone|firestone|Tokio, JP
+Dell Technologies|dell,alienware|Round Rock, USA
+HP Inc.|hp|Palo Alto, USA
+Logitech|logitech|Lausanne, CH
+Garmin|garmin|Schaffhausen, CH
+LEGO|lego|Billund, DK
+Mattel|barbie,hot wheels,fisher-price|El Segundo, USA
+Hasbro|monopoly,nerf,play-doh|Pawtucket, USA
+Electronic Arts|ea,ea sports fc,battlefield|Redwood City, USA
+Ubisoft|assassins creed|Saint-Mandé, FR
+Take-Two Interactive|rockstar,gta,2k|New York, USA
+Vodafone|vodafone|Newbury, UK
+Telefónica|o2,movistar|Madrid, ES
+Orange|orange|Paris, FR
+AT&T|att|Dallas, USA
+Verizon|verizon|New York, USA
+Rolex|tudor|Genf, CH
+Swatch Group|omega,swatch,longines,tissot|Biel, CH
+Dyson|dyson|Singapur, SG
+Saint-Gobain|sekurit|Courbevoie, FR
+AGC|asahi glass|Tokio, JP
+Corning|gorilla glass|Corning, USA
+Vestas|vestas|Aarhus, DK
+Atlas Copco|atlas copco|Nacka, SE
+Volvo Group|volvo trucks,renault trucks,mack|Göteborg, SE
+Ericsson|ericsson|Stockholm, SE
+Nokia|nokia|Espoo, FI
+Accenture|accenture|Dublin, IE
+JPMorgan Chase|jpmorgan,chase|New York, USA`.split("\n").map(l=>{const [name,al,hq]=l.split("|");return {name,aliases:al.split(","),hq,dir:true}});
+
+// ---------- Suche & Vorschläge ----------
+const sugg=$("#sugg"), q=$("#q");
+let items=[], act=-1;
+function closeSugg(){sugg.hidden=true;q.setAttribute("aria-expanded","false");act=-1}
+function localMatches(s){
+  const n=norm(s); if(!n)return allCompanies().map(c=>({c,why:null}));
+  const out=[],have=new Set(allCompanies().map(c=>norm(c.name)));
+  // Verzeichnis-Einträge ausblenden, wenn es für den Konzern schon Daten gibt (auch bei leicht abweichendem Namen)
+  const known=new Set();allCompanies().forEach(c=>[c.name,...(c.aliases||[])].forEach(x=>{const k=norm(x);if(k.length>2)known.add(k)}));
+  const dup=d=>{const n=norm(d.name);return [...have].some(h=>h===n||h.startsWith(n+" ")||n.startsWith(h+" "))||known.has(n)||d.aliases.some(x=>norm(x).length>2&&known.has(norm(x)))};
+  for(const c of [...allCompanies(),...DIRECTORY.filter(d=>!dup(d))]){
+    const nn=norm(c.name);
+    if(nn.includes(n)){out.push({c,why:null,score:nn.startsWith(n)?0:1});continue}
+    const al=(c.aliases||[]).find(a=>norm(a).startsWith(n))||(n.length>2&&(c.aliases||[]).find(a=>norm(a).includes(n)));
+    if(al)out.push({c,why:al,score:2});
+  }
+  // Unternehmen mit Daten zuerst, dann Verzeichnis-Einträge
+  return out.sort((a,b)=>(a.score-b.score)||((a.c.dir?1:0)-(b.c.dir?1:0))).slice(0,10);
+}
+function drawSugg(list,extra){
+  sugg.innerHTML="";items=[];
+  const add=(html,fn,cls)=>{const d=document.createElement("div");d.className="sg"+(cls?" "+cls:"");d.setAttribute("role","option");html(d);d.onmousedown=e=>{e.preventDefault();fn()};sugg.append(d);items.push({el:d,fn})};
+  list.forEach(({c,why})=>add(d=>{
+    const b=document.createElement("b");b.textContent=c.name;
+    const s=document.createElement("small");s.textContent=(why?`gehört zu ${c.name} (über „${why}“)`:c.hq||"")+(c.dir?" · wird geschätzt":c.source==="claude"?" · Claude":"");
+    d.append(b,s)},()=>c.dir?pickDirectory(c):show(c)));
+  if(extra)extra(add);
+  const v=q.value.trim();
+  if(v&&sample)add(d=>{d.textContent=`„${v}“ mit Claude suchen – auch Mutterkonzerne`},()=>claudeSuggest(v),"claude");
+  else if(v&&!list.length){const d=document.createElement("div");d.className="sg hd";d.textContent="Keine eingebauten Daten zu diesem Namen";sugg.append(d)}
+  sugg.hidden=!sugg.children.length;q.setAttribute("aria-expanded",String(!sugg.hidden));act=-1;
+}
+// Kein Treffer im Verzeichnis: nach kurzer Tipppause automatisch Claude nach passenden Konzernen fragen
+let autoT=0;
+q.addEventListener("input",()=>{
+  const list=localMatches(q.value);drawSugg(list);
+  clearTimeout(autoT);
+  const v=q.value.trim();
+  if(sample&&v.length>=3&&!list.length)autoT=setTimeout(()=>{if(q.value.trim()===v&&document.activeElement===q)claudeSuggest(v)},900);
+});
+function pickDirectory(c){
+  if(sample)return generate(c.name);
+  closeSugg();msg(`Für ${c.name} gibt es keine eingebauten Marktdaten. Die Schätzung durch Claude funktioniert nur, wenn die Seite in claude.ai geöffnet ist.`,"err");
+}
+q.addEventListener("focus",()=>drawSugg(localMatches(q.value)));
+q.addEventListener("blur",()=>setTimeout(closeSugg,120));
+q.addEventListener("keydown",e=>{
+  if(sugg.hidden)return;
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();act=(act+(e.key==="ArrowDown"?1:-1)+items.length)%items.length;items.forEach((it,i)=>it.el.classList.toggle("act",i===act))}
+  else if(e.key==="Enter"){e.preventDefault();(items[act]||items[0])?.fn()}
+  else if(e.key==="Escape")closeSugg();
+});
+
+// ---------- Claude ----------
+function busy(t){$("#busy").hidden=!t;$("#busyText").textContent=t||""}
+$("#stop").onclick=()=>ctl?.abort();
+function errText(e){
+  const c=e&&e.code;
+  if(c==="cancelled")return "";
+  if(c==="not_granted"||c==="sampling_disabled")return "Claude ist für diese Seite nicht freigegeben. Die eingebauten Unternehmen funktionieren weiter.";
+  if(c==="rate_limited")return "Zu viele Anfragen an Claude. Bitte in einer Minute erneut versuchen.";
+  if(c==="invalid_json")return "Claudes Antwort war kein gültiges Datenformat. Bitte erneut versuchen.";
+  if(c==="refused")return "Claude hat diese Anfrage abgelehnt. Bitte einen anderen Namen versuchen.";
+  return "Claude konnte gerade nicht antworten. Bitte erneut versuchen.";
+}
+async function claudeSuggest(text){
+  sugg.innerHTML="";const d=document.createElement("div");d.className="sg hd";d.textContent="Claude sucht passende Konzerne …";sugg.append(d);sugg.hidden=false;
+  try{
+    const res=await sample.json(
+`Ein Nutzer tippt in eine Unternehmenssuche: "${text.slice(0,80)}".
+Nenne bis zu 5 Unternehmen bzw. Konzerne, die gemeint sein könnten. Ist der Begriff eine Marke, ein Produkt oder eine Tochter, nenne zuerst den obersten Mutterkonzern (z. B. "Facebook" -> "Meta Platforms", "Google" -> "Alphabet") und danach die Tochter selbst, falls sie eigenständig analysierbar ist.
+Antworte nur mit einem JSON-Array: [{"name":"offizieller Konzernname","note":"kurzer Hinweis auf Deutsch, max. 8 Wörter"}]`,{modelTier:"quick"});
+    if(q.value.trim()!==text)return; // inzwischen weitergetippt
+    const arr=(Array.isArray(res)?res:[]).filter(x=>x&&x.name).slice(0,5);
+    if(document.activeElement!==q)q.focus();
+    drawSugg([],add=>{
+      const h=document.createElement("div");h.className="sg hd";h.textContent="Vorschläge von Claude";sugg.append(h);
+      arr.forEach(x=>{
+        const local=allCompanies().find(c=>norm(c.name)===norm(x.name)||(c.aliases||[]).some(a=>norm(a)===norm(x.name)));
+        add(dd=>{const b=document.createElement("b");b.textContent=String(x.name);const s=document.createElement("small");s.textContent=local?"Daten vorhanden":String(x.note||"");dd.append(b,s)},
+          ()=>local?show(local):generate(String(x.name)));
+      });
+      if(!arr.length){const n=document.createElement("div");n.className="sg hd";n.textContent="Kein passendes Unternehmen gefunden";sugg.append(n)}
+    });
+  }catch(e){closeSugg();const t=errText(e);if(t)msg(t,"err")}
+}
+function normalizeCompany(raw,name){
+  if(!raw||!Array.isArray(raw.markets))throw {code:"invalid_json"};
+  const num=v=>{const n=Number(v);return isFinite(n)?n:0};
+  const markets=raw.markets.filter(m=>m&&m.name&&Array.isArray(m.players)).map(m=>{
+    let players=m.players.filter(p=>p&&p.name).map(p=>[String(p.name).slice(0,40),Math.max(0,num(p.share)),p.own?1:0]).filter(p=>p[1]>0);
+    const sum=players.reduce((a,p)=>a+p[1],0); if(sum>100)players=players.map(p=>[p[0],p[1]*100/sum,p[2]]);
+    return {name:String(m.name).slice(0,40),basis:String(m.basis||"").slice(0,60),size:Math.max(0,num(m.size)),growth:num(m.growth),revenue:Math.max(0,num(m.revenue)),players};
+  }).filter(m=>m.players.some(p=>p[2]));
+  if(!markets.length)throw {code:"invalid_json"};
+  return {id:"c-"+norm(raw.name||name).replace(/\W+/g,"-"),name:String(raw.name||name).slice(0,60),hq:String(raw.hq||"").slice(0,60),
+    revenue:num(raw.revenue)||null,year:num(raw.year)||null,aliases:(raw.aliases||[]).map(String).slice(0,20),markets,source:"claude"};
+}
+async function generate(name){
+  closeSugg();msg("");
+  if(!sample){msg("Claude ist in dieser Ansicht nicht verfügbar.","err");return}
+  ctl=new AbortController();
+  busy(`Claude schätzt das Marktportfolio von ${name} … das dauert meist 20–60 Sekunden.`);
+  try{
+    const raw=await sample.json(
+`Du bist Strategieberater und erstellst eine Portfolioanalyse (BCG-Logik) für den Konzern "${name}".
+Bestimme die 4 bis 8 umsatzstärksten Märkte, in denen der Konzern mit eigenen Produkten oder Marken aktiv ist. Fasse mehrere eigene Produkte im selben Markt zusammen (z. B. Facebook und Instagram im Markt Social-Media-Werbung).
+Für jeden Markt: weltweites Marktvolumen, erwartetes jährliches Wachstum (CAGR der nächsten 3-5 Jahre, darf negativ sein), Konzernumsatz in diesem Markt und Marktanteile: die eigenen Produkte (own: true) und die 6 bis 10 größten Wettbewerber (own: false), so dass zusammen möglichst 85 % des Markts abgedeckt sind. Anteile in Prozent, Summe höchstens 100; den Rest nicht nennen.
+Nutze dein bestes Wissen mit den aktuellsten verfügbaren Zahlen, gerundet. Marktnamen kurz auf Deutsch (max. 3 Wörter).
+Antworte nur mit JSON in genau dieser Form:
+{"name":"Konzernname","hq":"Stadt, Land","revenue":Konzernumsatz in Mrd USD,"year":Geschäftsjahr,"aliases":["bekannte Marken und Töchter in Kleinbuchstaben"],
+"markets":[{"name":"Marktname","basis":"wie der Anteil gemessen ist, z. B. Anteil am Umsatz","size":Marktvolumen Mrd USD,"growth":Wachstum %,"revenue":Konzernumsatz Mrd USD,
+"players":[{"name":"Produkt/Marke","share":Anteil %,"own":true},{"name":"Wettbewerber","share":Anteil %,"own":false}]}]}`,
+      {signal:ctl.signal,cache:{gcTime:86400000}});
+    const c=normalizeCompany(raw,name);
+    generated=generated.filter(g=>g.id!==c.id&&norm(g.name)!==norm(c.name));generated.unshift(c);generated=generated.slice(0,20);
+    try{localStorage.setItem(LS_KEY,JSON.stringify(generated))}catch(e){}
+    show(c);
+  }catch(e){const t=errText(e);if(t)msg(t,"err")}
+  finally{busy("")}
+}
+$("#regen").onclick=()=>generate(state.company.name);
+
+// ---------- Steuerung ----------
+function seg(id,key,parse){
+  document.querySelectorAll(`#${id} button`).forEach(b=>b.onclick=()=>{
+    document.querySelectorAll(`#${id} button`).forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+    state[key]=parse(b.dataset.v);renderAll();
+  });
+}
+seg("sizeSeg","sizeBy",v=>v);seg("topSeg","top",Number);
+$("#thr").addEventListener("input",e=>{const v=Number(e.target.value);if(isFinite(v)){state.thr=v;renderAll()}});
+
+// Diagrammkarte so breit wie der Kreis bei voller Höhe, mit gleichem Rand ringsum
+function fitLayout(){
+  // Kopfzeile: bricht sie um, steht die Suche allein in Zeile 1 und alle Regler in Zeile 2
+  const tb=$("[data-card=title] .toolbar");
+  tb.classList.remove("stack");
+  const sr=tb.querySelector(".search"),mid=sr.offsetTop+sr.offsetHeight/2;
+  if([...tb.querySelectorAll(".ctl")].some(c=>c.offsetTop>mid))tb.classList.add("stack");
+  const main=$("#board"),stage=$('[data-card=chart]'),svg=$("#chart");
+  if(!window.matchMedia("(min-width:1100px)").matches){main.style.removeProperty("--chartw");return}
+  for(let i=0;i<8;i++){
+    const box=svg.getBoundingClientRect();
+    const chromeW=stage.offsetWidth-box.width;
+    // Breite des äußeren Rahmens messen: das Raster selbst wächst mit einer festen Spaltenbreite mit und taugt nicht als Maßstab
+    const avail=$(".wrap").clientWidth;
+    const max=avail-370-parseFloat(getComputedStyle(main).columnGap||0);
+    // mindestens 45 % der Breite, damit Kopf und Legende nicht umbrechen und den Kreis schrumpfen
+    const w=Math.round(Math.min(Math.max(box.height+chromeW,avail*0.45),max));
+    const cur=parseFloat(main.style.getPropertyValue("--chartw"))||0;
+    if(Math.abs(cur-w)<2)break;
+    main.style.setProperty("--chartw",w+"px");
+  }
+}
+// Mittlere Maustaste: kein Browser-Autoscroll, damit sie den Ausschnitt verschiebt
+$("#chart").addEventListener("mousedown",ev=>{if(ev.button===1)ev.preventDefault()},true);
+$("#zoomIn").onclick=()=>d3.select("#chart").transition().duration(250).call(zoom.scaleBy,1.5);
+$("#zoomOut").onclick=()=>d3.select("#chart").transition().duration(250).call(zoom.scaleBy,1/1.5);
+$("#zoomReset").onclick=()=>d3.select("#chart").transition().duration(250).call(zoom.transform,d3.zoomIdentity);
+$("#foldTable").addEventListener("click",()=>{
+  if(!window.matchMedia("(max-width:600px)").matches)return;
+  const card=$('[data-card=table]'),open=card.classList.toggle("collapsed");
+  $("#foldTable").setAttribute("aria-expanded",String(!open));
+});
+let rzT=0;
+window.addEventListener("resize",()=>{fitLayout();renderBCG();clearTimeout(rzT);rzT=setTimeout(()=>{renderChart();fitLayout();renderBCG()},200)});
+renderAll();
+// Nach dem Laden der Schriften stimmen die Maße erst endgültig
+document.fonts?.ready.then(()=>{fitLayout();renderBCG()});
+(async()=>{try{sample=window.claude?await window.claude.use("sample"):null}catch(e){sample=null}$("#regen").hidden=!sample})();
+</script>
