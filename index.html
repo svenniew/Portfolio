@@ -131,7 +131,7 @@ svg{display:block;width:100%;height:auto}
 .mkt{fill:none;stroke:var(--surface);stroke-width:5;pointer-events:none}
 .mkt.sel{stroke:var(--ink);stroke-width:3.5}
 .ring{fill:none;stroke:var(--line);stroke-width:2}
-#chart,#chart *{-webkit-user-select:none;user-select:none}
+#chart,#chart *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .lbl{pointer-events:none;font-family:var(--body);font-weight:700}
 .mlbl{cursor:grab;touch-action:none}
 .mlbl text{pointer-events:auto}
@@ -501,6 +501,38 @@ function renderChart(){
     .on("start",(ev,p)=>{st.dragP=p;p.ox=ev.x-p.x;p.oy=ev.y-p.y;p.tx=p.x;p.ty=p.y;tip.hidden=true;wake()})
     .on("drag",(ev,p)=>{p.tx=ev.x-p.ox;p.ty=ev.y-p.oy;wake()})
     .on("end",()=>{st.dragP=null;wake()});
+  // Handy: ein Finger scrollt die Seite; lang drücken (0,35 s) auf Zelle oder Marktname, dann ziehen = schubsen
+  let lp=null;
+  const lpPt=t=>{const [x,y]=d3.pointer(t,zl.node());return {x,y}};
+  svg.on("touchstart.lp",ev=>{
+    lp&&clearTimeout(lp.t);lp=null;
+    if(!narrowScreen()||ev.touches.length!==1)return;
+    const tgt=ev.target, lbl=tgt.closest&&tgt.closest(".mlbl");
+    const d=lbl?d3.select(lbl).datum():tgt.classList.contains("leaf")?d3.select(tgt).datum():null;
+    if(!d)return;
+    const t0=ev.touches[0];
+    lp={d,m:!!lbl,x0:t0.clientX,y0:t0.clientY,on:false,t:setTimeout(()=>{
+      const q=lpPt(t0);lp.on=true;tip.hidden=true;navigator.vibrate&&navigator.vibrate(15);
+      if(lp.m){st.drag=d;d.ox=q.x-d.x;d.oy=q.y-d.y}else{st.dragP=d;d.ox=q.x-d.x;d.oy=q.y-d.y;d.tx=d.x;d.ty=d.y}
+      wake();
+    },350)};
+  },{capture:true,passive:true});
+  svg.on("touchmove.lp",ev=>{
+    if(!lp)return;
+    const t=ev.touches[0];
+    if(!lp.on){if(ev.touches.length>1||Math.hypot(t.clientX-lp.x0,t.clientY-lp.y0)>8){clearTimeout(lp.t);lp=null}return}
+    ev.preventDefault();ev.stopPropagation();
+    const q=lpPt(t),d=lp.d;
+    if(lp.m){let x=q.x-d.ox,y=q.y-d.oy;const dx=x-CX,dy=y-CY,dist=Math.hypot(dx,dy),lim=R-18;
+      if(dist>lim){x=CX+dx*lim/dist;y=CY+dy*lim/dist}d.x=x;d.y=y}
+    else{d.tx=q.x-d.ox;d.ty=q.y-d.oy}
+    wake();
+  },{capture:true,passive:false});
+  svg.on("touchend.lp touchcancel.lp",ev=>{
+    if(!lp)return;clearTimeout(lp.t);
+    if(lp.on){ev.cancelable&&ev.preventDefault();st.drag=null;st.dragP=null;wake()} // kein Klick nach dem Schubsen
+    lp=null;
+  },{capture:true,passive:false});
 
   function draw(){
     const leaves=[];sites.forEach(s=>s.poly&&s.players.forEach(p=>p.poly&&leaves.push(p)));
